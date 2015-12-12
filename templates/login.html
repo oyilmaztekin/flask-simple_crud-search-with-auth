@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+	
+	<div class="container">	
+		<form action="" method="post">			
+
+				{{form.email.label}} 
+				{{form.email}}
+				{% if form.email.errors %} 
+				<span class="text-danger">Error</span>
+			{% endif %}
+				
+				{{form.password.label}}
+				{{form.password}}
+				
+				{% if form.password.errors %} 
+				<span class="text-danger">Error</span>
+			{% endif %}
+
+				{{form.remember_me.label}}
+				{{form.remember_me}}
+				
+				{{form.submit}}
+
+			
+				
+	
+				
+			</form>	
+		
+	</div>
+	
+{% endblock content %}

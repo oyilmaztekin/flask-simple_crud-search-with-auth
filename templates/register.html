@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">	
+	<form action="" method="post">					
+		{{form.hidden_tag()}}
+	
+		{{form.name.label}} 
+		{{form.name}}
+		{% if form.name.errors %} 
+		<span class="text-danger">Error</span>
+		{% endif %}
+
+		{{form.email.label}} 
+		{{form.email}}
+		{% if form.email.errors %} 
+		<span class="text-danger">Error</span>
+		{% endif %}
+
+		{{form.password.label}} 
+		{{form.password}}
+		{% if form.password.errors %} 
+		<span class="text-danger">Error</span>
+		{% endif %}
+		
+		
+
+		{{ form.submit }}
+
+
+
+	</form>	
+
+</div>
+
+{% endblock content %}
