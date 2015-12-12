@@ -9,7 +9,9 @@
 	<!-- Bootstrap CSS -->
 
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/animate.min.css') }}">
 	<link rel="apple-touch-icon" sizes="57x57" href="{{ url_for('static', filename='assets/favicon/apple-icon-57x57.png')}}">
 	<link rel="apple-touch-icon" sizes="60x60" href="{{ url_for('static', filename='assets/favicon/apple-icon-60x60.png')}}">
 	<link rel="apple-touch-icon" sizes="72x72" href="{{ url_for('static', filename='assets/favicon/apple-icon-72x72.png')}}">
@@ -36,8 +38,8 @@
 		</head>
 
 		<body>
-			<nav class="navbar">
-				<div class="container-fluid">
+			<nav class="navbar animated fadeInDown">
+				<div class="container">
 					<div class="navbar-header">
 						<button aria-expanded="false" class="navbar-toggle collapsed"
 						data-target="#bs-example-navbar-collapse-3" data-toggle=
@@ -52,12 +54,11 @@
 					
 					
 					{% if not session.logged_in %}
-						{% if request.path=="login" %}
+						
 							<a class="btn btn-default navbar-btn pull-right" href="{{ url_for('login') }}"> Login <i class="fa fa-sign-in"></i> </a>
-						{% endif %}
+						
 					{% else %}
 						<div class="pull-right">
-
 							<a class="btn btn-default navbar-btn" href="{{ url_for('logout') }}"> Log Out <i class="fa fa-sign-in"></i> </a>
 						</div>
 					{% endif %}
@@ -65,7 +66,8 @@
 			</div>
 		</nav>
 		<div class="container">
-			<div class="row">
+		
+			<div class="row animated fadeIn">
 				{% with messages = get_flashed_messages(with_categories=true) %}
 			      {% if messages %}
 			        {% for category, message in messages %}
@@ -80,10 +82,13 @@
 			      {% endif %}
 			  {% endwith %}
 			</div>
-		</div>
+		
+		
 		{% block content %}
 			
 		{% endblock content %}
+
+		</div><!--container-->
 		
 
 		<!-- Bootstrap JavaScript -->

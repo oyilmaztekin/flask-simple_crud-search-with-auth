@@ -11,7 +11,7 @@ from slugify import slugify
 class LoginForm(Form):
 	email = StringField(u'E-Mail', [validators.Required()])
 	password = PasswordField(u'Password', [validators.Required()])
-	remember_me = BooleanField(u'Keep me logged in')
+	remember_me = BooleanField(u'Remember me')
 	submit = SubmitField('Log in')
 
 class SignUpForm(Form):

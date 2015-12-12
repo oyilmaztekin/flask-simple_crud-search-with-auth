@@ -7,10 +7,10 @@ from flask_login import UserMixin
 
 class User(db.Document, UserMixin):    
     created_at = db.DateTimeField(default=datetime.datetime.now)
-    name = db.StringField(max_length=30, required=True, unique=True, help_text="Your helptext here")
-    email = db.StringField(max_length=100, required=True, unique=True, help_text="Your helptext here")
-    password = db.StringField(max_length=255, required=True, help_text="Your helptext here")
-    slug = db.StringField(help_text="Your helptext here")
+    name = db.StringField(max_length=30, required=True, unique=True, help_text="Username")
+    email = db.StringField(max_length=100, required=True, unique=True, help_text="Email")
+    password = db.StringField(max_length=255, required=True, help_text="Password")
+    slug = db.StringField(help_text="Slug")
     roles = db.ListField(db.StringField())
 
     def save(self, *args, **kwargs):

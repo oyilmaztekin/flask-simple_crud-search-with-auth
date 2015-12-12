@@ -2,37 +2,45 @@
 
 {% block content %}	
 
-<div class="container">	
 
+	
+	<div class="col-md-4 col-lg-4 col-md-offset-4 col-lg-offset-4">		
+	
 	<form action="" method="post">					
 		{{form.hidden_tag()}}
-	
-		{{form.name.label}} 
-		{{form.name}}
+
+		<div class="form-group animated fadeInUp">	
+		{{form.name.label}}
 		{% if form.name.errors %} 
-		<span class="text-danger">Error</span>
-		{% endif %}
+		<span class="text-danger"><strong>This field is required</strong></span>
+		{% endif %} 
+		{{form.name(class="form-control")}}
+		</div>
 
-		{{form.email.label}} 
-		{{form.email}}
+		<div class="form-group animated fadeInUp">	
+		{{form.email.label}}
 		{% if form.email.errors %} 
-		<span class="text-danger">Error</span>
-		{% endif %}
+		<span class="text-danger"><strong>This field is required</strong></span>
+		{% endif %} 
+		{{form.email(class="form-control")}}
+		</div>
 
-		{{form.password.label}} 
-		{{form.password}}
+		<div class="form-group animated fadeInUp">	
+		{{form.password.label}}
 		{% if form.password.errors %} 
-		<span class="text-danger">Error</span>
-		{% endif %}
+		<span class="text-danger"><strong>This field is required</strong></span>
+		{% endif %} 
+		{{form.password(class="form-control")}}
+		</div>
 		
 		
-
-		{{ form.submit }}
+		{{ form.submit(class="btn btn-info btn-block btn-lg animated fadeInUp") }}
+	
 
 
 
 	</form>	
+	</div>
 
-</div>
 
 {% endblock content %}

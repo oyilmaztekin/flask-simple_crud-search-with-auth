@@ -43,10 +43,10 @@ def login():
 
 		if form.validate_on_submit():			
 			login_user(User)
-			flask.flash('Logged in successfully.','success')
+			flask.flash('Logged in successfully.')
 			return redirect(url_for('profile'))
-	   
-	return render_template("login.html", form=form)
+	return render_template("login.html", form=form, alert="success")
+
 
 @app.route("/register", methods=['GET','POST'])
 def register():
@@ -63,10 +63,7 @@ def register():
 			flash('Something went wrong','danger')
 			return render_template('register.html', form=formS)
 
-		if formS.validate_on_submit():
-			name = request.form.get('name')
-			mail = request.form.get('email')
-			
+		if formS.validate_on_submit():					
 			hashash = formS.password.data
 			salt = uuid.uuid4().hex
 			hashed_password = hashlib.sha224(hashash + salt).hexdigest()
