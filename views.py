@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 # coding:utf-8
-from flask import Flask, render_template, redirect, url_for, request, flash
+from flask import Flask, render_template, redirect, url_for, request, flash, session
 from flask_login import login_required, login_user
 from copylighter import db, app, login_manager
 import datetime
@@ -43,21 +43,25 @@ def login():
 
 		if form.validate_on_submit():			
 			login_user(User)
-			flask.flash('Logged in successfully.')
+			flask.flash('Logged in successfully.','success')
 			return redirect(url_for('profile'))
 	   
-	return render_template("login.html", form=form, alert="success")
+	return render_template("login.html", form=form)
 
 @app.route("/register", methods=['GET','POST'])
 def register():
 	formS = SignUpForm()
 
+	if session.get('name'):
+		flash('You are already logged in')
+		return redirect('profile')
+
 	if request.method == 'POST':
 		formS = SignUpForm(request.form)
 		
 		if formS.validate() == False:
-			flash('Something went wrong')
-			return render_template('register.html', form=formS, alert="danger")
+			flash('Something went wrong','danger')
+			return render_template('register.html', form=formS)
 
 		if formS.validate_on_submit():
 			name = request.form.get('name')
@@ -69,7 +73,7 @@ def register():
 
 			newuser = User(name=formS.name.data, email=formS.email.data, password=hashed_password)				
 			newuser.save()
-			flash('You have successfully registered. You can login now')
+			flash('You have successfully registered. You can login now','success')
 			return redirect(url_for('login'))
 
 	return render_template("register.html", form=formS, title="Register to Copylighter")
