@@ -45,14 +45,16 @@
 						navigation</span> <span class="icon-bar"></span> <span class=
 						"icon-bar"></span> <span class="icon-bar"></span></button>
 						
-						<a class="navbar-brand" href="/index"><img src="{{url_for('static', filename='assets/logo.png')}}" alt="Copylighter" height="25"></a>
+						<a class="navbar-brand" href="{{ url_for('index') }}"><img src="{{url_for('static', filename='assets/logo.png')}}" alt="Copylighter" height="25"></a>
 					</div>
 					<div class="collapse navbar-collapse" id=
 					"bs-example-navbar-collapse-3">
 					
-
+					
 					{% if not session.logged_in %}
-						<a class="btn btn-default navbar-btn pull-right" href="{{ url_for('login') }}"> Login <i class="fa fa-sign-in"></i> </a>
+						{% if request.path=="login" %}
+							<a class="btn btn-default navbar-btn pull-right" href="{{ url_for('login') }}"> Login <i class="fa fa-sign-in"></i> </a>
+						{% endif %}
 					{% else %}
 						<div class="pull-right">
 

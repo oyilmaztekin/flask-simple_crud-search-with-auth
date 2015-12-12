@@ -1,8 +1,18 @@
 {% extends "base.html" %}
 
-{% block content %}
+{% block content %}	
 
 <div class="container">	
+		{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			{% for message in messages  %}
+				<div class="alert alert-{{alert}}" role="alert">
+				 {{ message }}
+
+			</div>
+			{% endfor %}			
+		{% endif %}	    
+	{% endwith %}
 	<form action="" method="post">					
 		{{form.hidden_tag()}}
 	

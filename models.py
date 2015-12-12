@@ -5,25 +5,40 @@ from copylighter import db, app
 from slugify import slugify
 from flask_login import UserMixin
 
-class Role(db.Document):
-    name = db.StringField(max_length=80, unique=True)
-    description = db.StringField(max_length=255)
-
 class User(db.Document, UserMixin):    
     created_at = db.DateTimeField(default=datetime.datetime.now)
     name = db.StringField(max_length=30, required=True, unique=True, help_text="Your helptext here")
     email = db.StringField(max_length=100, required=True, unique=True, help_text="Your helptext here")
     password = db.StringField(max_length=255, required=True, help_text="Your helptext here")
     slug = db.StringField(help_text="Your helptext here")
-    roles = db.ListField(db.ReferenceField('Role'))
+    roles = db.ListField(db.StringField())
 
     def save(self, *args, **kwargs):
+        defaultRole = ("active",)
         if not self.slug:
-            self.slug = slugify(self.name)                    
+            self.slug = slugify(self.name)
+        if not self.roles:
+            self.roles = defaultRole
         return super(User, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return self.name
+
+    def is_authenticated(self):
+        return True
+ 
+    def is_active(self):
+        return True
+ 
+    def is_anonymous(self):
+        return False
+ 
+    def get_id(self):
+        return unicode(self._id)
+ 
+    def __repr__(self):
+        return '<User %r>' % (self.name)
+
 
 
 class Note(db.Document):

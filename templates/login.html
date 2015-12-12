@@ -1,34 +1,44 @@
 {% extends "base.html" %}
 
 {% block content %}
-	
-	<div class="container">	
-		<form action="" method="post">			
 
-				{{form.email.label}} 
-				{{form.email}}
-				{% if form.email.errors %} 
-				<span class="text-danger">Error</span>
-			{% endif %}
-				
-				{{form.password.label}}
-				{{form.password}}
-				
-				{% if form.password.errors %} 
-				<span class="text-danger">Error</span>
-			{% endif %}
+<div class="container">	
+			{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			{% for message in messages  %}
+				<div class="alert alert-{{alert}}" role="alert">
+				 {{ message }}
 
-				{{form.remember_me.label}}
-				{{form.remember_me}}
-				
-				{{form.submit}}
+			</div>
+			{% endfor %}			
+		{% endif %}	    
+	{% endwith %}
+	<form action="" method="post">			
+		{{form.hidden_tag()}}
+		{{form.email.label}} 
+		{{form.email}}
+		{% if form.email.errors %} 
+		<span class="text-danger">Error</span>
+		{% endif %}
 
-			
-				
-	
-				
-			</form>	
-		
-	</div>
-	
+		{{form.password.label}}
+		{{form.password}}
+
+		{% if form.password.errors %} 
+		<span class="text-danger">Error</span>
+		{% endif %}
+
+		{{form.remember_me.label}}
+		{{form.remember_me}}
+
+		{{form.submit}}
+
+
+
+
+
+	</form>	
+
+</div>
+
 {% endblock content %}

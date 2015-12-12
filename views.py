@@ -7,11 +7,12 @@ import datetime
 from forms import LoginForm,SignUpForm
 from flask_login import UserMixin
 from models import User
+import hashlib, uuid
 
 
 @app.route("/index")
 @app.route("/")
-def hello():
+def index():
 	return render_template("index.html", title="Copylighter")
 
 @app.errorhandler(404)
@@ -22,46 +23,53 @@ def page_not_found(e):
 def server_error(e):
 	return render_template("500.html"), 500
 
+@app.route("/profile")
+@login_required
+def profile():
+	return render_template("profile.html", title="Profile")
+
+
 @login_manager.user_loader
 def load_user(_id):
-	return User.objects.get(_id)
+    return User.get(_id)
 
 @app.route("/login", methods=['GET','POST'])
 def login():
 	form = LoginForm()
+	if request.method == 'POST':
+		form = LoginForm()
+		if form.validate() == False:
+			return render_template("login.html", form=form)
 
-	
-	if form.validate_on_submit():
-		login_user(user)		
-		user = User.objects.filter(email=form.email.data).first()
-
-		if user is not None:
-			login_user(user, form.remember_me.data)
-			flash("logged in successfully as {}.".format(user.username))
-			return redirect(request.args.get('next') or url_for('index'))
-
-
-		flash('Incorrect username or password')
+		if form.validate_on_submit():			
+			login_user(User)
+			flask.flash('Logged in successfully.')
+			return redirect(url_for('profile'))
 	   
-	return render_template("login.html", form=form)
+	return render_template("login.html", form=form, alert="success")
 
 @app.route("/register", methods=['GET','POST'])
 def register():
 	formS = SignUpForm()
-	"""
-	roles inserti yapmalisin. Thumblelog query lerinden örnek alabilirsin
-	"""
 
 	if request.method == 'POST':
-		formS = SignUpForm()
+		formS = SignUpForm(request.form)
 		
 		if formS.validate() == False:
-			return render_template('register.html', form=formS)
+			flash('Something went wrong')
+			return render_template('register.html', form=formS, alert="danger")
 
 		if formS.validate_on_submit():
-			newuser = User(name=formS.name.data, email=formS.email.data, password=formS.password.data)				
-			newuser.save()
+			name = request.form.get('name')
+			mail = request.form.get('email')
 			
-			return redirect(url_for('/profile'))
+			hashash = formS.password.data
+			salt = uuid.uuid4().hex
+			hashed_password = hashlib.sha224(hashash + salt).hexdigest()
 
-	return render_template("register.html", form=formS)
+			newuser = User(name=formS.name.data, email=formS.email.data, password=hashed_password)				
+			newuser.save()
+			flash('You have successfully registered. You can login now')
+			return redirect(url_for('login'))
+
+	return render_template("register.html", form=formS, title="Register to Copylighter")
