@@ -10,14 +10,6 @@
 		{{form.hidden_tag()}}
 
 		<div class="form-group animated fadeInUp">	
-		{{form.name.label}}
-		{% if form.name.errors %} 
-		<span class="text-danger"><strong>This field is required</strong></span>
-		{% endif %} 
-		{{form.name(class="form-control")}}
-		</div>
-
-		<div class="form-group animated fadeInUp">	
 		{{form.email.label}}
 		{% if form.email.errors %} 
 		<span class="text-danger"><strong>This field is required</strong></span>
@@ -32,12 +24,8 @@
 		{% endif %} 
 		{{form.password(class="form-control")}}
 		</div>
-		
-		
+				
 		{{ form.submit(class="btn btn-info btn-block btn-lg animated fadeInUp") }}
-	
-
-
 
 	</form>	
 	</div>

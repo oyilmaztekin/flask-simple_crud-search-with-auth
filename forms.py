@@ -15,8 +15,6 @@ class LoginForm(Form):
 	submit = SubmitField('Log in')
 
 class SignUpForm(Form):
-	#created_at = HiddenField()
-	name = StringField(u'Username', [validators.Required()])
 	email = StringField(u'Email', [validators.Required()])
 	password = PasswordField(u'Password', [validators.Required()])
 	submit = SubmitField('Sign Up')

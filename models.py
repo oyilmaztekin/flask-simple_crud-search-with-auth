@@ -7,7 +7,7 @@ from flask_login import UserMixin
 
 class User(db.Document, UserMixin):    
     created_at = db.DateTimeField(default=datetime.datetime.now)
-    name = db.StringField(max_length=30, required=True, unique=True, help_text="Username")
+    name = db.StringField(max_length=30, unique=True, help_text="Username or Name-Lastname")
     email = db.StringField(max_length=100, required=True, unique=True, help_text="Email")
     password = db.StringField(max_length=255, required=True, help_text="Password")
     slug = db.StringField(help_text="Slug")
@@ -15,8 +15,8 @@ class User(db.Document, UserMixin):
 
     def save(self, *args, **kwargs):
         defaultRole = ("active",)
-        if not self.slug:
-            self.slug = slugify(self.name)
+        #if not self.slug:
+            #self.slug = slugify(self.name)
         if not self.roles:
             self.roles = defaultRole
         return super(User, self).save(*args, **kwargs)

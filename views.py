@@ -10,10 +10,33 @@ from models import User
 import hashlib, uuid
 
 
-@app.route("/index")
-@app.route("/")
+@app.route("/index", methods=['GET','POST'])
+@app.route("/", methods=['GET','POST'])
 def index():
-	return render_template("index.html", title="Copylighter")
+	formS = SignUpForm()
+
+	if session.get('email'):
+		flash('You are already logged in')
+		return redirect('profile')
+
+	if request.method == 'POST':
+		formS = SignUpForm(request.form)
+		
+		if formS.validate() == False:
+			flash('Something went wrong','danger')
+			return render_template('register.html', form=formS)
+
+		if formS.validate_on_submit():					
+			hashash = formS.password.data
+			salt = uuid.uuid4().hex
+			hashed_password = hashlib.sha224(hashash + salt).hexdigest()
+
+			newuser = User(email=formS.email.data, password=hashed_password)				
+			newuser.save()
+			flash('You have successfully registered. You can login now','success')
+			return redirect(url_for('login'))
+
+	return render_template("index.html", form=formS, title="Register to Copylighter")
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -52,7 +75,7 @@ def login():
 def register():
 	formS = SignUpForm()
 
-	if session.get('name'):
+	if session.get('email'):
 		flash('You are already logged in')
 		return redirect('profile')
 
@@ -68,7 +91,7 @@ def register():
 			salt = uuid.uuid4().hex
 			hashed_password = hashlib.sha224(hashash + salt).hexdigest()
 
-			newuser = User(name=formS.name.data, email=formS.email.data, password=hashed_password)				
+			newuser = User(email=formS.email.data, password=hashed_password)				
 			newuser.save()
 			flash('You have successfully registered. You can login now','success')
 			return redirect(url_for('login'))
