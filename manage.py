@@ -5,6 +5,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from flask.ext.script import Manager, Server
 from copylighter import app
 
+
 manager = Manager(app)
 
 # Turn on debugger by default and reloader

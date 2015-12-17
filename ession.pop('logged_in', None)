@@ -1,0 +1,47 @@
+[33mcommit 224760f340f57597e200610ca361836fb5c1754d[m
+Author: oyilmaztekin <yilmaztekin.ozer@gmail.com>
+Date:   Thu Dec 17 16:04:56 2015 +0200
+
+    auth tamam
+
+[33mcommit d28c69db37f6e297b9344b357c1e5cebd5301fae[m
+Author: oyilmaztekin <yilmaztekin.ozer@gmail.com>
+Date:   Mon Dec 14 21:16:36 2015 +0200
+
+    landing register düzenlendi, name artık required değil
+
+[33mcommit 994f635e280cdf9efdd646fbda3d870bb3b88be3[m
+Author: oyilmaztekin <yilmaztekin.ozer@gmail.com>
+Date:   Sun Dec 13 14:56:26 2015 +0200
+
+    indexteki nota bak. model required ve landing düzenlenecek. register da öyle.
+
+[33mcommit e33e1e79b9a3f4026da1cc455627a8b2f413e732[m
+Author: oyilmaztekin <yilmaztekin.ozer@gmail.com>
+Date:   Sat Dec 12 21:40:04 2015 +0200
+
+    animate.css eklendi
+
+[33mcommit 4dd1db118a9c1b67d6530304b49d2553258dd03b[m
+Author: oyilmaztekin <yilmaztekin.ozer@gmail.com>
+Date:   Sat Dec 12 17:32:35 2015 +0200
+
+    register ve temel flash feedback ler tamam
+
+[33mcommit b429132e097d02f26aa94d47df15e651a950c6e7[m
+Author: oyilmaztekin <yilmaztekin.ozer@gmail.com>
+Date:   Sat Dec 12 17:29:51 2015 +0200
+
+    register ve temel flash feedback ler tamam
+
+[33mcommit 5154a8b80bf5fec30c89e92a67f72db38f8267fd[m
+Author: oyilmaztekin <yilmaztekin.ozer@gmail.com>
+Date:   Sat Dec 12 17:14:10 2015 +0200
+
+    register tamam
+
+[33mcommit 16ba0ec3826868e0eb9a66295f9ab6b5222c31c3[m
+Author: oyilmaztekin <yilmaztekin.ozer@gmail.com>
+Date:   Sat Dec 12 11:21:16 2015 +0200
+
+    Initial commit with contributors

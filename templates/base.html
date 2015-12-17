@@ -38,6 +38,25 @@
 		</head>
 
 		<body>
+			<div class="container-fluid" style="position:relative; z-index: 9;">
+				<div class="container">
+					<div class="row animated fadeIn">
+				{% with messages = get_flashed_messages(with_categories=true) %}
+			      {% if messages %}
+			        {% for category, message in messages %}
+			            {% if category == 'message' %}
+			              <div class="alert alert-warning" role="alert">
+			            {% else %}
+			              <div class="alert alert-{{ category }}" role="alert">
+			            {% endif %}
+			              {{ message }}
+			            </div>
+			        {% endfor %}
+			      {% endif %}
+			  {% endwith %}
+				</div>
+				</div>
+			</div>
 			<nav class="navbar animated fadeInDown">
 				<div class="container">
 					<div class="navbar-header">
@@ -65,23 +84,8 @@
 			</div>
 		</nav>
 		<div class="container">
-		
-			<div class="row animated fadeIn" style="position:relative; z-index: 9;">
-				{% with messages = get_flashed_messages(with_categories=true) %}
-			      {% if messages %}
-			        {% for category, message in messages %}
-			            {% if category == 'message' %}
-			              <div class="alert alert-warning" role="alert">
-			            {% else %}
-			              <div class="alert alert-{{ category }}" role="alert">
-			            {% endif %}
-			              {{ message }}
-			            </div>
-			        {% endfor %}
-			      {% endif %}
-			  {% endwith %}
-			</div>
-		
+			
+
 		
 		{% block content %}
 			
@@ -93,10 +97,16 @@
 		<!-- Bootstrap JavaScript -->
 		<script src="{{url_for('static', filename='js/bootstrap.min.js')}}"></script>
 		<script src="{{url_for('static', filename='js/jquery.1.11.3.min.js')}}"></script>
+		
 
 		{% block footer %}
 			
 		{% endblock footer %}
+		<script type="text/javascript">
+  		$(function() {
+  			
+			});
+		</script>
 
 	</body>
 	</html>

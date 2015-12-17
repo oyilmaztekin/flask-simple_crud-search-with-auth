@@ -17,8 +17,9 @@ class LoginForm(Form):
 		__model__ = 'User' 
 
 class SignUpForm(Form):
+	name = StringField(u'Username', [validators.Required()])
 	email = StringField(u'Email', [validators.Required()])
 	password = PasswordField(u'Password', [validators.Required()])
-	submit = SubmitField('Sign Up')
+	submit = SubmitField('Register & Start Copylighting')
 	class Meta():
 		__model__ = 'User'

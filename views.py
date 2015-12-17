@@ -8,7 +8,11 @@ from forms import LoginForm,SignUpForm
 from flask_login import UserMixin
 from models import User
 import hashlib, uuid
+from slugify import slugify
+from mongoengine.errors import NotUniqueError
 
+
+username = ""
 @app.route("/index", methods=['GET','POST'])
 @app.route("/", methods=['GET','POST'])
 def index():
@@ -26,12 +30,17 @@ def index():
 			salt = uuid.uuid4().hex
 			hashed_password = hashlib.sha224(hashash + salt).hexdigest()
 
-			newuser = User(email=formS.email.data, password=hashed_password)				
-			newuser.save()
+			newuser = User(name=formS.name.data, email=formS.email.data, password=hashed_password)				
+			try:
+				newuser.save()
+			except NotUniqueError:
+				flash('Username or email taken before','danger')
+				return render_template("index.html", form=formS, title="Copylighter")
+
 			flash('You have successfully registered. You can login now','success')
 			return redirect(url_for('login'))
 
-	return render_template("index.html", form=formS, title="Register to Copylighter")
+	return render_template("index.html", form=formS, title="Copylighter")
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -42,9 +51,9 @@ def server_error(e):
 	return render_template("500.html"), 500
 
 
-@app.route("/profile", methods=['GET','POST'])
+@app.route("/profile/<slug>")
 @login_required
-def profile():
+def profile(slug):
 	return render_template("profile.html", title="Cp-Profile")
 
 
@@ -61,8 +70,9 @@ def login():
 			user = User.objects(email=form.email.data).first()
 			if user is not None:
 				login_user(user, form.remember_me.data)
-				flash('Logged in successfully as {}.'.format(user.email),'success')
-				return redirect(request.args.get('next') or url_for('profile'))
+				slug = slugify(user.name)
+				flash('Logged in successfully as {}.'.format(user.name),'success')
+				return redirect(request.args.get('next') or url_for('profile', slug=slug))
 			else:
 				flash('Wrong username or password.','danger')
 				return render_template("login.html", form=form)
@@ -95,7 +105,7 @@ def register():
 			salt = uuid.uuid4().hex
 			hashed_password = hashlib.sha224(hashash + salt).hexdigest()
 
-			newuser = User(email=formS.email.data, password=hashed_password)				
+			newuser = User(name=formS.name.data, email=formS.email.data, password=hashed_password)				
 			newuser.save()
 			flash('You have successfully registered. You can login now','success')
 			return redirect(url_for('login'))
