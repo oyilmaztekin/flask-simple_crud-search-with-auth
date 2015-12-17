@@ -11,6 +11,9 @@ import hashlib, uuid
 from slugify import slugify
 from mongoengine.errors import NotUniqueError
 
+"""
+LOGİNE ŞİFREMİ UNUTTUM EKLE
+"""
 
 username = ""
 @app.route("/index", methods=['GET','POST'])
