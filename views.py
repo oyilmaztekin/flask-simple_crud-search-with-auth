@@ -34,10 +34,10 @@ def index():
 			try:
 				newuser.save()
 			except NotUniqueError:
-				flash('Username or email taken before','danger')
+				flash('Username or email already exists','danger')
 				return render_template("index.html", form=formS, title="Copylighter")
 
-			flash('You have successfully registered. You can login now','success')
+			flash('Successfully registered. You can login now','success')
 			return redirect(url_for('login'))
 
 	return render_template("index.html", form=formS, title="Copylighter")
@@ -71,7 +71,8 @@ def login():
 			if user is not None:
 				login_user(user, form.remember_me.data)
 				slug = slugify(user.name)
-				flash('Logged in successfully as {}.'.format(user.name),'success')
+				#flash('Logged in successfully as {}.'.format(user.name),'success')
+				flash('Logged in successfully','success')
 				return redirect(request.args.get('next') or url_for('profile', slug=slug))
 			else:
 				flash('Wrong username or password.','danger')
@@ -82,7 +83,7 @@ def login():
 def logout():
 	session.pop('logged_in', None)
 	session.clear()
-	flash('You were logged out','info')
+	flash('Logged out','info')
 	return redirect(url_for('index'))
 
 @app.route("/register", methods=['GET','POST'])

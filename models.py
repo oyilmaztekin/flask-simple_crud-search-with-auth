@@ -9,7 +9,7 @@ from flask.ext.login import UserMixin
 class User(db.Document, UserMixin):    
     created_at = db.DateTimeField(default=datetime.datetime.now)
     name = db.StringField(max_length=30, required=True, unique=True, help_text="Username or Name-Lastname")
-    email = db.StringField(max_length=100, required=True, unique=True, help_text="Email")
+    email = db.StringField(max_length=100, required=True, help_text="Email")
     password = db.StringField(max_length=255, required=True, help_text="Password")
     slug = db.StringField(help_text="Slug")
     roles = db.ListField(db.StringField())
