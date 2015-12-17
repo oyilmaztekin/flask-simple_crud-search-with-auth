@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 # coding:utf-8
 from flask import Flask, render_template, redirect, url_for, request, flash, session
-from flask_login import login_required, login_user
+from flask_login import login_required, login_user, logout_user
 from copylighter import db, app, login_manager
 import datetime
 from forms import LoginForm,SignUpForm
@@ -9,15 +9,10 @@ from flask_login import UserMixin
 from models import User
 import hashlib, uuid
 
-
 @app.route("/index", methods=['GET','POST'])
 @app.route("/", methods=['GET','POST'])
 def index():
 	formS = SignUpForm()
-
-	if session.get('email'):
-		flash('You are already logged in')
-		return redirect('profile')
 
 	if request.method == 'POST':
 		formS = SignUpForm(request.form)
@@ -46,30 +41,39 @@ def page_not_found(e):
 def server_error(e):
 	return render_template("500.html"), 500
 
-@app.route("/profile")
+
+@app.route("/profile", methods=['GET','POST'])
 @login_required
 def profile():
-	return render_template("profile.html", title="Profile")
+	return render_template("profile.html", title="Cp-Profile")
 
 
 @login_manager.user_loader
-def load_user(_id):
-    return User.get(_id)
+def load_user(id):
+    return User.objects.get(id=id)
 
 @app.route("/login", methods=['GET','POST'])
 def login():
 	form = LoginForm()
 	if request.method == 'POST':
 		form = LoginForm()
-		if form.validate() == False:
-			return render_template("login.html", form=form)
+		if form.validate_on_submit():
+			user = User.objects(email=form.email.data).first()
+			if user is not None:
+				login_user(user, form.remember_me.data)
+				flash('Logged in successfully as {}.'.format(user.email),'success')
+				return redirect(request.args.get('next') or url_for('profile'))
+			else:
+				flash('Wrong username or password.','danger')
+				return render_template("login.html", form=form)
+	return render_template("login.html", form=form, title="Cp-Login")
 
-		if form.validate_on_submit():			
-			login_user(User)
-			flask.flash('Logged in successfully.')
-			return redirect(url_for('profile'))
-	return render_template("login.html", form=form, alert="success")
-
+@app.route("/logout")
+def logout():
+	session.pop('logged_in', None)
+	session.clear()
+	flash('You were logged out','info')
+	return redirect(url_for('index'))
 
 @app.route("/register", methods=['GET','POST'])
 def register():

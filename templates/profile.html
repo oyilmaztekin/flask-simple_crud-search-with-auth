@@ -1,9 +1,11 @@
+<!-- LANDİNG ALANINI AYNI EVERNOTE GİBİ YAPALIM. -->
+
 {% extends "base.html" %}
 
 {% block content %}
-
 {% if current_user.is_authenticated %}
-  Hi {{ current_user.name }}!
+  Hi {{ current_user.email }}
 {% endif %}
 	
+
 {% endblock content %}

@@ -3,10 +3,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% if current_user.is_authenticated %}
-  Hi {{ current_user.name }}!
-{% endif %}
-	<div class="row center-block">								
+
+	<div class="row center-block animated fadeIn">								
 		<img src="{{url_for('static',filename='assets/landing.jpg')}}" alt="" style="width:550px;height:auto; margin-top:-80px!important;" class="center-block animated fadeIn">
 		<span class="text-center center-block animated fadeInUp" style="position: relative; z-index: 2; margin-top:-20px;"> A dijital highlighting experience...</span>
 		<h2 class="text-center animated fadeInUp" style="position: relative; z-index:2; margin-top:0px">Save &amp; Read Your <strong>Quotes</strong> Everywhere</h2>
@@ -14,29 +12,33 @@
 
 	<div class="col-md-12 col-lg-12" style="margin-top:20px;">
 		<form action="" method="post" class="form-inline">					
+			
 			{{form.hidden_tag()}}
+			
 			<div class="form-group animated fadeInUp col-md-3 col-lg-3 col-md-offset-3 col-lg-offset-3">	
-			{{form.email.label}}
-			{% if form.email.errors %} 
-			<span class="text-danger"><strong>This field is required</strong></span>
-			{% endif %} 
-			{{form.email(class="form-control")}}
+				{{form.email.label}}
+				<div class="clearfix"></div>
+				{% if form.email.errors %} 
+				<span class="text-danger"><strong>This field is required</strong></span>
+				{% endif %} 
+				{{form.email(class="form-control input-lg", placeholder="Set Username")}}
 			</div>
 
 			<div class="form-group animated fadeInUp col-md-3 col-lg-3">	
-			{{form.password.label}}
-			{% if form.password.errors %} 
-			<span class="text-danger"><strong>This field is required</strong></span>
-			{% endif %} 
-			{{form.password(class="form-control")}}
+				{{form.password.label}}
+				<div class="clearfix"></div>
+				{% if form.password.errors %} 
+				<span class="text-danger"><strong>This field is required</strong></span>
+				{% endif %} 
+				{{form.password(class="form-control input-lg",placeholder="Set Password")}}
 			</div>
+
 			<div class="clearfix"></div>
-			<div class="col-md-6 col-md-offset-3 col-lg-offset-3" style="margin-top:15px;">
-			{{ form.submit(class="btn btn-info btn-block animated fadeInUp") }}
+			<div class="col-md-6 col-lg-6 col-md-offset-3 col-lg-offset-3" style="margin-top:15px;">
+			{{ form.submit(class="btn btn-success btn-lg btn-block animated fadeInUp") }}
 			</div>	
 		</form>
 	</div>
 	
 
 {% endblock content %}
-

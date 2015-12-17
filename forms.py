@@ -13,6 +13,8 @@ class LoginForm(Form):
 	password = PasswordField(u'Password', [validators.Required()])
 	remember_me = BooleanField(u'Remember me')
 	submit = SubmitField('Log in')
+	class Meta():
+		__model__ = 'User' 
 
 class SignUpForm(Form):
 	email = StringField(u'Email', [validators.Required()])
@@ -20,5 +22,3 @@ class SignUpForm(Form):
 	submit = SubmitField('Sign Up')
 	class Meta():
 		__model__ = 'User'
-
-

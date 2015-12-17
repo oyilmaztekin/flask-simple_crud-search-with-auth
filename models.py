@@ -3,7 +3,7 @@
 import datetime
 from copylighter import db, app
 from slugify import slugify
-from flask_login import UserMixin
+from flask.ext.login import UserMixin
 
 class User(db.Document, UserMixin):    
     created_at = db.DateTimeField(default=datetime.datetime.now)
@@ -29,13 +29,13 @@ class User(db.Document, UserMixin):
  
     def is_active(self):
         return True
- 
+
     def is_anonymous(self):
         return False
  
     def get_id(self):
-        return unicode(self._id)
- 
+        return unicode(str(self.id))
+
     def __repr__(self):
         return '<User %r>' % (self.name)
 
@@ -62,5 +62,3 @@ class Note(db.Document):
         #if not self.user:
             #self.user = online.sessioned_user or whatever!!!        
         return super(Note, self).save(*args, **kwargs)
-
-

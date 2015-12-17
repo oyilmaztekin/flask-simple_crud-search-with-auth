@@ -52,22 +52,21 @@
 					<div class="collapse navbar-collapse" id=
 					"bs-example-navbar-collapse-3">
 					
-					
-					{% if not session.logged_in %}
-						
-							<a class="btn btn-default navbar-btn pull-right" href="{{ url_for('login') }}"> Login <i class="fa fa-sign-in"></i> </a>
-						
-					{% else %}
+					{% if current_user.is_authenticated %}
 						<div class="pull-right">
 							<a class="btn btn-default navbar-btn" href="{{ url_for('logout') }}"> Log Out <i class="fa fa-sign-in"></i> </a>
 						</div>
-					{% endif %}
+					{% else %}
+						<a class="btn btn-default navbar-btn pull-right" href="{{ url_for('login') }}"> Login <i class="fa fa-sign-in"></i> </a>
+
+					{% endif %}	
+					
 				</div>
 			</div>
 		</nav>
 		<div class="container">
 		
-			<div class="row animated fadeIn">
+			<div class="row animated fadeIn" style="position:relative; z-index: 9;">
 				{% with messages = get_flashed_messages(with_categories=true) %}
 			      {% if messages %}
 			        {% for category, message in messages %}
