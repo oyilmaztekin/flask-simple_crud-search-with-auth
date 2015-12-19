@@ -1,7 +1,7 @@
-cop = Note(title="deneme deneme", desc="lorem ipsum dolor sit amet", slug="deneme-deneme", content="deneme deneme deneme", img="https://scontent.xx.fbcdn.net/hprofile-xla1/v/t1.0-1/p200x200/11224829_10153089580400863_2394807549513554674_n.jpg?oh=10f5830cfaa402d8a3dfb29dfce3f068&oe=56DD2682", tags=["social,backend, workflow"])
+cop = Note(title="deneme deneme", slug="deneme-deneme", content="deneme deneme deneme", tags=["social,backend, workflow"])
 
 comment = Comment(body="Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like")
 
-userA = User(name="Özer Yılmaztekin", email="yilmaztekin.ozer@gmail.com", password="121314")
+userA = User(name="oyilmaztekin", email="yilmaztekin.ozer@gmail.com", password="121314")
 
 from copylighter.models import *

@@ -41,72 +41,82 @@
 			<div class="container-fluid" style="position:relative; z-index: 9;">
 				<div class="container">
 					<div class="row animated fadeIn">
-				{% with messages = get_flashed_messages(with_categories=true) %}
-			      {% if messages %}
-			        {% for category, message in messages %}
-			            {% if category == 'message' %}
-			              <div class="alert alert-warning" role="alert">
-			            {% else %}
-			              <div class="alert alert-{{ category }}" role="alert">
-			            {% endif %}
-			              {{ message }}
-			            </div>
-			        {% endfor %}
-			      {% endif %}
-			  {% endwith %}
-				</div>
-				</div>
-			</div>
-			<nav class="navbar animated fadeInDown">
-				<div class="container">
-					<div class="navbar-header">
-						<button aria-expanded="false" class="navbar-toggle collapsed"
-						data-target="#bs-example-navbar-collapse-3" data-toggle=
-						"collapse" type="button"><span class="sr-only">Toggle
-						navigation</span> <span class="icon-bar"></span> <span class=
-						"icon-bar"></span> <span class="icon-bar"></span></button>
-						
-						<a class="navbar-brand" href="{{ url_for('index') }}"><img src="{{url_for('static', filename='assets/logo.png')}}" alt="Copylighter" height="25"></a>
-					</div>
-					<div class="collapse navbar-collapse" id=
-					"bs-example-navbar-collapse-3">
-					
-					{% if current_user.is_authenticated %}
-						<div class="pull-right">
-							<a class="btn btn-default navbar-btn" href="{{ url_for('logout') }}"> Log Out <i class="fa fa-sign-in"></i> </a>
+						{% with messages = get_flashed_messages(with_categories=true) %}
+						{% if messages %}
+						{% for category, message in messages %}
+						{% if category == 'message' %}
+						<div class="alert alert-warning" role="alert">
+							{% else %}
+							<div class="alert alert-{{ category }}" role="alert">
+								{% endif %}
+								{{ message }}
+							</div>
+							{% endfor %}
+							{% endif %}
+							{% endwith %}
 						</div>
-					{% else %}
-						<a class="btn btn-default navbar-btn pull-right" href="{{ url_for('login') }}"> Login <i class="fa fa-sign-in"></i> </a>
-
-					{% endif %}	
-					
+					</div>
 				</div>
-			</div>
-		</nav>
-		<div class="container">
-			
+				<nav class="navbar animated fadeInDown" style="position:relative; z-index:8;">
+					<div class="container">
+						<div class="navbar-header">
+							<a class="navbar-brand" href="{{ url_for('index') }}"><img src="{{url_for('static', filename='assets/logo.png')}}" alt="Copylighter" height="25"></a>
+						</div>
+						
+						{% if current_user.is_authenticated %}
+						<div class="pull-right" style="position:relative; z-index: 9!important;">
+							<ul class="list-inline">
+								<li class="pull-left">
+									<button id="addQuote" class="btn btn-success navbar-btn pull-left" data-toggle="modal" data-target="#add_quote">Add Quote <i class="fa fa-plus"></i> </button>	
+								</li>
+								<li class="pull-left">
+									<a class="btn btn-default navbar-btn pull-left" href="{{url_for('profile')}}/{{ current_user.slug }}"><i class="fa fa-user"></i> {{ current_user.name }} </a>	
+								</li>
+								<li class="pull-left">
+									<a class="btn btn-link navbar-btn pull-left" href="{{ url_for('logout') }}"> Log Out <i class="fa fa-sign-out"></i> </a>
+								</li>
+							</ul>
 
-		
-		{% block content %}
-			
-		{% endblock content %}
+						</div>
+						{% else %}
 
-		</div><!--container-->
-		
+						<a class="btn btn-link navbar-btn pull-right" href="{{ url_for('login') }}"> Login <i class="fa fa-sign-in"></i> </a>
 
-		<!-- Bootstrap JavaScript -->
-		<script src="{{url_for('static', filename='js/bootstrap.min.js')}}"></script>
-		<script src="{{url_for('static', filename='js/jquery.1.11.3.min.js')}}"></script>
-		
+						{% endif %}	
 
-		{% block footer %}
-			
-		{% endblock footer %}
-		<script type="text/javascript">
-  		$(function() {
-  			
-			});
-		</script>
 
-	</body>
-	</html>
+					</div>
+				</nav>
+				<div class="container">
+
+
+
+					{% block content %}
+
+					{% endblock content %}
+
+				</div><!--container-->
+
+				<!-- Bootstrap JavaScript -->
+				<script src="{{url_for('static', filename='js/jquery.1.11.3.min.js')}}"></script>
+				<script src="{{url_for('static', filename='js/bootstrap.min.js')}}"></script>
+
+
+
+				{% block footer %}
+
+				{% endblock footer %}
+				<script type="text/javascript">
+					$(function() {
+						if($("#homepage-flag").length > 0) {
+							$('#addQuote').hide()
+						}
+						else{
+							$('#addQuote').show()
+						}
+
+					});
+				</script>
+
+			</body>
+			</html>

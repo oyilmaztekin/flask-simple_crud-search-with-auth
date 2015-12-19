@@ -4,7 +4,31 @@ import datetime
 from copylighter import db, app
 from slugify import slugify
 from flask.ext.login import UserMixin
+from flask.ext.security import UserMixin
+from flask.ext.login import current_user
 
+
+
+class Note(db.Document):
+    created_at = db.DateTimeField(default=datetime.datetime.now)
+    URLLink = db.URLField()
+    title = db.StringField(max_length=255)
+    slug = db.StringField()
+    content = db.StringField(required=True)
+    tags = db.ListField(db.StringField())
+
+    isArchived = db.BooleanField(default=False)
+    isSecret = db.BooleanField(default=False)
+
+    def __unicode__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):        
+        if not self.slug:
+            self.slug = slugify(self.title)
+        #if not self.user:
+            #self.user = current_user.id        
+        return super(Note, self).save(*args, **kwargs)
 
 class User(db.Document, UserMixin):    
     created_at = db.DateTimeField(default=datetime.datetime.now)
@@ -13,6 +37,7 @@ class User(db.Document, UserMixin):
     password = db.StringField(max_length=255, required=True, help_text="Password")
     slug = db.StringField(help_text="Slug")
     roles = db.ListField(db.StringField())
+    notes = db.ListField(db.EmbeddedDocumentField('Note'))
 
     def save(self, *args, **kwargs):
         defaultRole = ("active",)
@@ -40,26 +65,7 @@ class User(db.Document, UserMixin):
     def __repr__(self):
         return '<User %r>' % (self.name)
 
-
-
-class Note(db.Document):
+class NoteRef(db.Document):
     created_at = db.DateTimeField(default=datetime.datetime.now)
-    URLLink = db.URLField()
-    title = db.StringField(max_length=255, required=True)
-    slug = db.StringField()
-    content = db.StringField(required=True)
-    tags = db.ListField(db.StringField())
-    user = db.ListField(db.ReferenceField('User'))
-
-    isArchived = db.BooleanField(default=False)
-    isSecret = db.BooleanField(default=False)
-
-    def __unicode__(self):
-        return self.title
-
-    def save(self, *args, **kwargs):        
-        if not self.slug:
-            self.slug = slugify(self.title)
-        #if not self.user:
-            #self.user = online.sessioned_user or whatever!!!        
-        return super(Note, self).save(*args, **kwargs)
+    note_id = db.ReferenceField('Note')
+    user_id = db.ReferenceField('User')

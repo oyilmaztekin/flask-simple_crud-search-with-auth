@@ -1,9 +1,10 @@
 # -*- coding: UTF-8 -*-
 # coding:utf-8
 from flask_wtf import Form
-from wtforms.fields import StringField, PasswordField, BooleanField, SubmitField, HiddenField 
+from wtforms.fields import StringField, PasswordField, BooleanField, SubmitField, HiddenField, TextAreaField 
+from wtforms.validators import EqualTo
 from wtforms import validators
-from models import User
+from models import User, Note
 import datetime 
 from slugify import slugify
 
@@ -23,3 +24,14 @@ class SignUpForm(Form):
 	submit = SubmitField('Register & Start Copylighting')
 	class Meta():
 		__model__ = 'User'
+
+class NoteForm(Form):
+	content = TextAreaField(u'Quote', [validators.Required()])	
+	tags = StringField(u'Tags')
+	submit = SubmitField('Add This Quote')
+	class Meta():
+		__model__ = 'Note'
+
+
+
+

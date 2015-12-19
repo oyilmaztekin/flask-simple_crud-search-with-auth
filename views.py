@@ -4,21 +4,24 @@ from flask import Flask, render_template, redirect, url_for, request, flash, ses
 from flask_login import login_required, login_user, logout_user
 from copylighter import db, app, login_manager
 import datetime
-from forms import LoginForm,SignUpForm
+from models import Note, NoteRef, User
+from forms import LoginForm,SignUpForm, NoteForm
 from flask_login import UserMixin
-from models import User
 import hashlib, uuid
 from slugify import slugify
-from mongoengine.errors import NotUniqueError
+from mongoengine.errors import NotUniqueError, ValidationError
+import re
+from flask.ext.login import current_user
 
-"""
-LOGİNE ŞİFREMİ UNUTTUM EKLE
-"""
+
 
 username = ""
+Email_Regex = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
+)
+
 @app.route("/index", methods=['GET','POST'])
 @app.route("/", methods=['GET','POST'])
-def index():
+def index():	
 	formS = SignUpForm()
 
 	if request.method == 'POST':
@@ -26,16 +29,23 @@ def index():
 		
 		if formS.validate() == False:
 			flash('Something went wrong','danger')
-			return render_template('register.html', form=formS)
+			return render_template('index.html', form=formS)
 
 		if formS.validate_on_submit():					
 			hashash = formS.password.data
 			salt = uuid.uuid4().hex
 			hashed_password = hashlib.sha224(hashash + salt).hexdigest()
 
+			form_email = formS.email.data
+			if not Email_Regex.match(form_email):
+				flash('Invalid email adress','danger')
+				return render_template("index.html", form=formS, title="Copylighter", regex="Invalid email adress")
+
+
 			newuser = User(name=formS.name.data, email=formS.email.data, password=hashed_password)				
 			try:
 				newuser.save()
+				
 			except NotUniqueError:
 				flash('Username or email already exists','danger')
 				return render_template("index.html", form=formS, title="Copylighter")
@@ -54,15 +64,48 @@ def server_error(e):
 	return render_template("500.html"), 500
 
 
-@app.route("/profile/<slug>")
+@app.route("/profile",methods=['GET','POST'])
+@app.route("/profile/<slug>",methods=['GET','POST'])
 @login_required
 def profile(slug):
-	return render_template("profile.html", title="Cp-Profile")
+	form = NoteForm()
+	if request.method == 'POST':
+		form = NoteForm(request.form)
+		if form.validate() == False:
+			flash('Qutoe field is required','danger')
+			return render_template('profile.html', form=form)
+		
+		if form.validate_on_submit():					
+			sum_con = form.content.data[0:40]
+			tags = form.tags.data
+			tagList = tags.split(",")
+			note = Note(content=form.content.data, tags=tagList, title=sum_con)
+			noteRef = NoteRef(note_id=note.id, user_id=current_user.id)
+			noteRef.save()
+			note.save()
+			current_user.notes.append(note)
+			current_user.save() 
+
+
+			#try:
+				#note.save()
+			#except ValidationError:
+				#flash('Something went wrong.','danger')
+				#return render_template('profile.html', form=form)
+			
+			flash('Quote saved successfully.','success')
+			return render_template('profile.html', form=form, )
+
+	return render_template("profile.html", title=current_user.name, form=form)
 
 
 @login_manager.user_loader
 def load_user(id):
     return User.objects.get(id=id)
+    try:
+    	pass
+    except DoesNotExist:
+    	print "asdasd"
 
 @app.route("/login", methods=['GET','POST'])
 def login():
@@ -93,10 +136,6 @@ def logout():
 def register():
 	formS = SignUpForm()
 
-	if session.get('email'):
-		flash('You are already logged in')
-		return redirect('profile')
-
 	if request.method == 'POST':
 		formS = SignUpForm(request.form)
 		
@@ -108,9 +147,18 @@ def register():
 			hashash = formS.password.data
 			salt = uuid.uuid4().hex
 			hashed_password = hashlib.sha224(hashash + salt).hexdigest()
+			form_email = formS.email.data
+			if not Email_Regex.match(form_email):
+				flash('Invalid email adress','danger')
+				return render_template("register.html", form=formS, title="Copylighter", regex="Invalid email adress")
 
 			newuser = User(name=formS.name.data, email=formS.email.data, password=hashed_password)				
-			newuser.save()
+			try:
+				newuser.save()
+				
+			except NotUniqueError:
+				flash('Username or email already exists','danger')
+				return render_template("register.html", form=formS, title="Copylighter")
 			flash('You have successfully registered. You can login now','success')
 			return redirect(url_for('login'))
 
