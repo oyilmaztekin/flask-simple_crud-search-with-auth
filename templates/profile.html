@@ -3,12 +3,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% if current_user.is_authenticated %}
-Hi {{ current_user.name }}
-{% endif %}
 
-
-
+Hi {{ current_user.name }}<br/>
+{{ current_user.notes[1].title }}
 
 <!--ADD QUOTE-->
 <div class="modal fade" id="add_quote" tabindex="-1" role="dialog" aria-labelledby="adding">

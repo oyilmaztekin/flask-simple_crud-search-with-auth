@@ -79,14 +79,13 @@ def profile(slug):
 			sum_con = form.content.data[0:40]
 			tags = form.tags.data
 			tagList = tags.split(",")
-			note = Note(content=form.content.data, tags=tagList, title=sum_con)
-			noteRef = NoteRef(note_id=note.id, user_id=current_user.id)
-			noteRef.save()
+			note = Note(content=form.content.data, tags=tagList, title=sum_con)			
 			note.save()
 			current_user.notes.append(note)
 			current_user.save() 
-
-
+			noteRef = NoteRef(note_id=note.id, user_id=current_user.id)
+			noteRef.save()
+			
 			#try:
 				#note.save()
 			#except ValidationError:
