@@ -1,11 +1,62 @@
 <!-- LANDİNG ALANINI AYNI EVERNOTE GİBİ YAPALIM. -->
-
 {% extends "base.html" %}
 
 {% block content %}
 
-Hi {{ current_user.name }}<br/>
-{{ current_user.notes[1].title }}
+<div class="col-md-3 col-lg-3 animated fadeInLeft">
+	<div class="h3">Tags</div><br/>
+	{% for tagContainer in current_user.notes  %}
+	{% for tagInner in tagContainer.tags   %}
+	<span class="small" style="margin-bottom:5px; display: inline-block;">
+		<a class="btn btn-default btn-sm">
+			{{ tagInner }}
+		</a>
+	</span>
+	{% endfor %}
+	{% endfor %}
+	
+	
+</div><!--left-->
+
+<div class="col-md-8 col-lg-8">
+	<div class="row">
+		<h3>Search</h3>
+			<div class="input-group">				
+				<input type="text" class="form-control" placeholder="Search in Quotes">
+				<span class="input-group-btn">
+					<button class="btn btn-primary" type="button">Search <i class="fa fa-search"></i></button>
+				</span>
+			</div><!-- /input-group -->
+	</div><!--row sonu-->
+
+	<div class="clearfix"></div>
+
+	{% for item in current_user.notes  %}
+	<div class="row animated fadeInUp" style="margin-top:20px;">		
+		<h3><strong>{{ item.title }}...</strong></h3>
+		<blockquote>			
+			<span>
+				{% for itemT in item.tags  %}
+				<span class="label label-default"> <i class="fa fa-tag"></i>  {{ itemT }}</span>	
+				{% endfor %}
+			</span>
+			<p></p>
+			{{ item.content }}
+			<footer><cite title="Source Title">{{ item.URLLink }}</cite></footer>		
+			<div class="btn-group" role="group" aria-label="*" style="margin-top:10px;">
+				<button type="button" class="btn btn-default btn-sm"><i class="fa fa-share-alt"></i> Share</button>
+				<button type="button" class="btn btn-default btn-sm"><i class="fa fa-heart"></i> Favorite</button>
+				<button type="button" class="btn btn-default btn-sm"><i class="fa fa-trash"></i> Delete</button>
+			</div>		
+		</blockquote>
+		
+	</div> <!--row sonu-->
+
+	{% endfor %}
+
+	
+</div>
+
 
 <!--ADD QUOTE-->
 <div class="modal fade" id="add_quote" tabindex="-1" role="dialog" aria-labelledby="adding">
@@ -24,7 +75,7 @@ Hi {{ current_user.name }}<br/>
 					{{form.hidden_tag()}}
 
 					<div class="form-group animated fadeInUp">	
-					{{form.content.label}}
+						{{form.content.label}}
 						<div class="clearfix"></div>
 						{% if form.content.errors %} 
 						<span class="text-danger"><strong>This field is required</strong></span>

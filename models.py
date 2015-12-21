@@ -69,3 +69,8 @@ class NoteRef(db.Document):
     created_at = db.DateTimeField(default=datetime.datetime.now)
     note_id = db.ReferenceField('Note')
     user_id = db.ReferenceField('User')
+
+class TagRef(db.Document):
+    created_at = db.DateTimeField(default=datetime.datetime.now)
+    tags = db.StringField(max_length=30)
+    note_id = db.ListField(db.ReferenceField('Note'))

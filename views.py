@@ -4,7 +4,7 @@ from flask import Flask, render_template, redirect, url_for, request, flash, ses
 from flask_login import login_required, login_user, logout_user
 from copylighter import db, app, login_manager
 import datetime
-from models import Note, NoteRef, User
+from models import Note, NoteRef, User, TagRef
 from forms import LoginForm,SignUpForm, NoteForm
 from flask_login import UserMixin
 import hashlib, uuid
@@ -12,8 +12,6 @@ from slugify import slugify
 from mongoengine.errors import NotUniqueError, ValidationError
 import re
 from flask.ext.login import current_user
-
-
 
 username = ""
 Email_Regex = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
@@ -68,6 +66,8 @@ def server_error(e):
 @app.route("/profile/<slug>",methods=['GET','POST'])
 @login_required
 def profile(slug):
+	#variables
+
 	form = NoteForm()
 	if request.method == 'POST':
 		form = NoteForm(request.form)
@@ -76,16 +76,23 @@ def profile(slug):
 			return render_template('profile.html', form=form)
 		
 		if form.validate_on_submit():					
-			sum_con = form.content.data[0:40]
+			sum_con = form.content.data[0:120]
 			tags = form.tags.data
 			tagList = tags.split(",")
-			note = Note(content=form.content.data, tags=tagList, title=sum_con)			
+			
+			note = Note(content=form.content.data, tags=tagList, title=sum_con)		
 			note.save()
+			
 			current_user.notes.append(note)
 			current_user.save() 
+			
 			noteRef = NoteRef(note_id=note.id, user_id=current_user.id)
 			noteRef.save()
 			
+			for item in tagList:
+				tagRef = TagRef(tags=item, note_id=[note.id,])
+				tagRef.save()
+
 			#try:
 				#note.save()
 			#except ValidationError:

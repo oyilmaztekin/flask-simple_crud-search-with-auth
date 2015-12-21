@@ -20,6 +20,7 @@ db = MongoEngine(app)
 app.config['SECURITY_RECOVERABLE'] = True
 app.session_interface = MongoEngineSessionInterface(db)
 
+
 if __name__ == "__main__":
 	app.run(debug=True)
 
