@@ -20,6 +20,11 @@ class Note(db.Document):
     isArchived = db.BooleanField(default=False)
     isSecret = db.BooleanField(default=False)
 
+    meta = {
+        'ordering': ['-created_at'],
+        'allow_inheritance': True
+    }
+
     def __unicode__(self):
         return self.title
 

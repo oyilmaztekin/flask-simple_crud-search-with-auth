@@ -3,23 +3,23 @@
 
 {% block content %}
 
-<div class="col-md-3 col-lg-3 animated fadeInLeft">
+<div class="col-md-3 col-lg-3 animated fadeIn">
 	<div class="h3">Tags</div><br/>
 	{% for tagContainer in current_user.notes  %}
-	{% for tagInner in tagContainer.tags   %}
-	<span class="small" style="margin-bottom:5px; display: inline-block;">
-		<a class="btn btn-default btn-sm">
-			{{ tagInner }}
-		</a>
-	</span>
-	{% endfor %}
+		{% for tagInner in tagContainer.tags   %}
+		<span class="small" style="margin-bottom:5px; display: inline-block;">
+			<a class="btn btn-default btn-sm">
+				{{ tagInner }}
+			</a>
+		</span>
+		{% endfor %}
 	{% endfor %}
 	
 	
 </div><!--left-->
 
 <div class="col-md-8 col-lg-8">
-	<div class="row">
+	<div class="row animated fadeIn">
 		<h3>Search</h3>
 			<div class="input-group">				
 				<input type="text" class="form-control" placeholder="Search in Quotes">
@@ -31,7 +31,7 @@
 
 	<div class="clearfix"></div>
 
-	{% for item in current_user.notes  %}
+	{% for item in current_user.notes|sort(attribute='created_at',reverse=True)  %}
 	<div class="row animated fadeInUp" style="margin-top:20px;">		
 		<h3><strong>{{ item.title }}...</strong></h3>
 		<blockquote>			
@@ -42,7 +42,8 @@
 			</span>
 			<p></p>
 			{{ item.content }}
-			<footer><cite title="Source Title">{{ item.URLLink }}</cite></footer>		
+			<footer><cite title="Source Title">{{ item.URLLink }}</cite> <span class="pull-right">{{ item.created_at }} </span></footer>		
+			<div class="clearfix"></div>
 			<div class="btn-group" role="group" aria-label="*" style="margin-top:10px;">
 				<button type="button" class="btn btn-default btn-sm"><i class="fa fa-share-alt"></i> Share</button>
 				<button type="button" class="btn btn-default btn-sm"><i class="fa fa-heart"></i> Favorite</button>
