@@ -15,6 +15,23 @@
 				</span>
 			</div><!-- /input-group -->
 			</form>
+
+			{% for tagContainer in current_user.notes  %}
+		{% for tagInner in tagContainer.tags %}
+			
+		<div class="center-block" style="margin-top:5px; display: inline-block;">
+			<span class="label label-default label-lg">
+				{% filter title %}
+					{{ tagInner }} 					
+				{% endfilter %}
+				
+				<!--<span class="label label-default">{{ tagContainer.tags|length }}</span>-->
+			</span>
+		
+
+		</div>
+		{% endfor %}
+	{% endfor %}
 	</div><!--row sonu-->
 
 	<div class="clearfix"></div>
@@ -35,8 +52,12 @@
 			<footer><cite title="Source Title">{{ item.URLLink }}</cite> <span class="pull-right">{{ item.created_at }} </span></footer>		
 			<div class="clearfix"></div>
 			<div class="btn-group" role="group" aria-label="*" style="margin-top:10px;">
-				<button type="button" class="btn btn-default btn-sm"><i class="fa fa-share-alt"></i> Share</button>
-				<button type="button" class="btn btn-default btn-sm"><i class="fa fa-trash"></i> Delete</button>
+				<form action="/delete_quote" method="post">
+					{{ delete_quote.hidden_tag() }}
+					{{ delete_quote.submit(class="btn btn-default btn-sm") }}
+				
+				</form>				
+				<!--<button type="button" class="btn btn-default btn-sm"><i class="fa fa-trash"></i> Delete</button>-->
 			</div>		
 		</blockquote>
 		

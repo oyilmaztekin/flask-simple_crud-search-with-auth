@@ -2,29 +2,40 @@
 
 {% block content %}
 <span id="homepage-flag" style="display: none"></span>
+<ol class="breadcrumb">
+	<li><a href="{{url_for('profile')}}/{{ current_user.slug }}"><i class="fa fa-user"></i> {{ current_user.name }}</a></li>
+	<li class="active">{{ data }}</li>
+</ol>
 
-
-
-	<div class="row animated fadeInUp" style="margin-top:20px;">		
+{% if result != None %}	
+	{% for results in result  %}
+	<div class="row animated fadeInUp" style="margin-top:20px;">	
 		<blockquote>			
+			<h3><strong>{{ results.title }}...</strong></h3>
 			<span>
-				{% for tags in result.tags  %}				
+				{% for tags in results.tags  %}				
 				<span class="label label-default"> <i class="fa fa-tag"></i> {{ tags }}</span>	
 				{% endfor %}
 			</span>
 			<p></p>
-			{{ result.content }}
-			<footer><cite title="Source Title">{{ result.URLLink }}</cite> <span class="pull-right">{{ result.created_at }} </span></footer>	
+			{{ results.content }}
+			<footer><cite title="Source Title">{{ results.URLLink }}</cite> <span class="pull-right">{{ results.created_at }} </span></footer>	
 			<div class="btn-group" role="group" aria-label="*" style="margin-top:10px;">
 				<button type="button" class="btn btn-default btn-sm"><i class="fa fa-share-alt"></i> Share</button>
 				<button type="button" class="btn btn-default btn-sm"><i class="fa fa-trash"></i> Delete</button>
 			</div>		
 		</blockquote>
-
+		</div>
+		{% else %}
 		
-	</div> <!--row sonu-->
+		<div class="alert alert-warning" role="alert">We didn't find anythig</div>
 
 	
+	{% endfor %}
+
+	
+	{% endif %}
+
 
 
 {% endblock content %}

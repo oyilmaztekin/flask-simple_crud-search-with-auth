@@ -38,6 +38,11 @@ class SearchForm(Form):
 	class Meta():
 		__model__ = 'Note'
 
+class deleteQuoteForm(Form):
+	submit = SubmitField('Delete')
+	class Mete():
+		__model__ = 'Note'
+
 
 
 

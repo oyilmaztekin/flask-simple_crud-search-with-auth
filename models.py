@@ -22,15 +22,17 @@ class Note(db.Document):
       #  'ordering': ['-created_at'],
      #   'allow_inheritance': True
     #}
+    """
     meta = {'indexes': [
-        {'fields': ["$content"],
+        {'fields': ["$tags"],
+         'ordering': ['-created_at'],
          'default_language': 'english',
          'ordering': ['-created_at'],
          'allow_inheritance': True,
-         'weights': {'content': 2}
+         'weights': {'tags': 10}
         }
     ]}
-
+    """
     def __unicode__(self):
         return '%s %s' % (self.title, self.content)
 

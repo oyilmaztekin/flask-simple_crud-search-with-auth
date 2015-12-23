@@ -5,7 +5,7 @@ from flask_login import login_required, login_user, logout_user
 from copylighter import db, app, login_manager
 import datetime
 from models import Note, NoteRef, User, TagRef
-from forms import LoginForm,SignUpForm, NoteForm, SearchForm
+from forms import LoginForm,SignUpForm, NoteForm, SearchForm, deleteQuoteForm
 from flask_login import UserMixin
 import hashlib, uuid
 from slugify import slugify
@@ -13,6 +13,7 @@ from mongoengine.errors import NotUniqueError, ValidationError
 import re
 from flask.ext.login import current_user
 from collections import Counter
+from pymongo.errors import OperationFailure
 
 username = ""
 Email_Regex = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
@@ -68,7 +69,6 @@ def server_error(e):
 @login_required
 def profile(slug):
 	#variables
-	
 	form = NoteForm(prefix="form")
 
 	if request.method == 'POST':
@@ -105,27 +105,35 @@ def profile(slug):
 			flash('Quote saved successfully.','success')
 			return render_template('profile.html', form=form, )
 
-	return render_template("profile.html", title=current_user.name, form=form, search_form=SearchForm() )
+	return render_template("profile.html", title=current_user.name, form=form, search_form=SearchForm(), delete_quote=deleteQuoteForm() )
 
 
 @app.route("/search" ,methods=['POST'])
 @login_required
-def search():
+def search():	
 	searchForm = SearchForm(request.form)
+	
 	if request.method == 'POST':
 		searchForm = SearchForm(request.form)
+		searchedby = searchForm.search.data
 
 		if searchForm.validate() == False:
-			flash("Something went wrong.",'danger')
+			flash("Empty search.",'warning')
+			userNote = Note.objects.search_text(searchForm.search.data).as_pymongo()
+
 
 		if searchForm.validate_on_submit():
 			#noteResult = Note.objects.search_text(content=SearchForm.search.data).first()
-			userNote = Note.objects.search_text(searchForm.search.data).first()
-			
+			userNote = Note.objects.search_text(searchForm.search.data).as_pymongo()
 			#document = notes.objects(content=searchForm.search.data).first()
 			print userNote
 
-	return render_template("search.html", title="searched", search_form=searchForm, result=userNote)
+	return render_template("search.html", title=searchedby, search_form=searchForm, result=userNote, data=searchedby)
+
+@app.route("/delete_quote" ,methods=['POST'])
+@login_required
+def delete_quote():
+	return render_template("delete.html", title="delete", delete_note=deleteNote )	
 
 @login_manager.user_loader
 def load_user(id):
