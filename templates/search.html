@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<span id="homepage-flag" style="display: none"></span>
+
+
+
+	<div class="row animated fadeInUp" style="margin-top:20px;">		
+		<blockquote>			
+			<span>
+				{% for tags in result.tags  %}				
+				<span class="label label-default"> <i class="fa fa-tag"></i> {{ tags }}</span>	
+				{% endfor %}
+			</span>
+			<p></p>
+			{{ result.content }}
+			<footer><cite title="Source Title">{{ result.URLLink }}</cite> <span class="pull-right">{{ result.created_at }} </span></footer>	
+			<div class="btn-group" role="group" aria-label="*" style="margin-top:10px;">
+				<button type="button" class="btn btn-default btn-sm"><i class="fa fa-share-alt"></i> Share</button>
+				<button type="button" class="btn btn-default btn-sm"><i class="fa fa-trash"></i> Delete</button>
+			</div>		
+		</blockquote>
+
+		
+	</div> <!--row sonu-->
+
+	
+
+
+{% endblock content %}

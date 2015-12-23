@@ -32,6 +32,12 @@ class NoteForm(Form):
 	class Meta():
 		__model__ = 'Note'
 
+class SearchForm(Form):
+	search = StringField(u'Search', [validators.Required()])	
+	submit = SubmitField('Search')
+	class Meta():
+		__model__ = 'Note'
+
 
 
 

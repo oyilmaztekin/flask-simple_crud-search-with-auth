@@ -7,8 +7,6 @@ from flask.ext.login import UserMixin
 from flask.ext.security import UserMixin
 from flask.ext.login import current_user
 
-
-
 class Note(db.Document):
     created_at = db.DateTimeField(default=datetime.datetime.now)
     URLLink = db.URLField()
@@ -20,13 +18,21 @@ class Note(db.Document):
     isArchived = db.BooleanField(default=False)
     isSecret = db.BooleanField(default=False)
 
-    meta = {
-        'ordering': ['-created_at'],
-        'allow_inheritance': True
-    }
+    #meta = {
+      #  'ordering': ['-created_at'],
+     #   'allow_inheritance': True
+    #}
+    meta = {'indexes': [
+        {'fields': ["$content"],
+         'default_language': 'english',
+         'ordering': ['-created_at'],
+         'allow_inheritance': True,
+         'weights': {'content': 2}
+        }
+    ]}
 
     def __unicode__(self):
-        return self.title
+        return '%s %s' % (self.title, self.content)
 
     def save(self, *args, **kwargs):        
         if not self.slug:
