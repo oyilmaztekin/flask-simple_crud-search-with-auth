@@ -69,14 +69,13 @@ def server_error(e):
 @login_required
 def profile(slug):
 	#variables
-	form = NoteForm(prefix="form")
-
+	form = NoteForm(prefix="form")	
 	if request.method == 'POST':
 		form = NoteForm(request.form)
 
 		if form.validate() == False:
 			flash("Something went wrong.",'danger')
-			return render_template('profile.html', form=form)
+			return render_template('profile.html', form=form, search_form=SearchForm(), delete_quote=deleteQuoteForm())
 
 		if form.validate_on_submit():				
 			sum_con = form.content.data[0:120]
@@ -103,7 +102,7 @@ def profile(slug):
 				#return render_template('profile.html', form=form)
 			
 			flash('Quote saved successfully.','success')
-			return render_template('profile.html', form=form, )
+			return render_template('profile.html', form=form, search_form=SearchForm(), delete_quote=deleteQuoteForm())
 
 	return render_template("profile.html", title=current_user.name, form=form, search_form=SearchForm(), delete_quote=deleteQuoteForm() )
 
@@ -126,13 +125,14 @@ def search():
 			#noteResult = Note.objects.search_text(content=SearchForm.search.data).first()
 			userNote = Note.objects.search_text(searchForm.search.data).as_pymongo()
 			#document = notes.objects(content=searchForm.search.data).first()
-			print userNote
+			#print userNote
 
 	return render_template("search.html", title=searchedby, search_form=searchForm, result=userNote, data=searchedby)
 
 @app.route("/delete_quote" ,methods=['POST'])
 @login_required
 def delete_quote():
+	deleteNote = deleteQuoteForm()
 	return render_template("delete.html", title="delete", delete_note=deleteNote )	
 
 @login_manager.user_loader

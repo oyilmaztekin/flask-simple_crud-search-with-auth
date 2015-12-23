@@ -10,7 +10,12 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 
 app = Flask(__name__)
-app.config["MONGODB_SETTINGS"] = {'DB': "copylighter"}
+app.config["MONGODB_SETTINGS"] = {
+'DB': "copylighter",
+'host':'mongodb://localhost/copylighter',
+'username':'copyOz',
+'password':'7e0522bfd98d2051a20a0aca5fb3899f'
+}
 app.config["SECRET_KEY"] = '6cf34ed05e241ac72456425779220bfeaf3557ef8371bed4'
 login_manager = LoginManager()
 login_manager.session_protection = "strong"

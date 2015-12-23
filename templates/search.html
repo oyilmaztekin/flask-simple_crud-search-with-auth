@@ -3,7 +3,7 @@
 {% block content %}
 <span id="homepage-flag" style="display: none"></span>
 <ol class="breadcrumb">
-	<li><a href="{{url_for('profile')}}/{{ current_user.slug }}"><i class="fa fa-user"></i> {{ current_user.name }}</a></li>
+	<li class="h3"><a href="{{url_for('profile')}}/{{ current_user.slug }}"><i class="fa fa-arrow-left"></i> All Quotes</a></li>
 	<li class="active">{{ data }}</li>
 </ol>
 
