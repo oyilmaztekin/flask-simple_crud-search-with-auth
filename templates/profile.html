@@ -5,40 +5,42 @@
 
 <div class="col-md-8 col-lg-8 col-md-offset-2 col-lg-offset-2">
 	<div class="row animated fadeIn">
-		<h3>Search</h3>
-			<form action="{{ url_for('search') }}" name="searchForm" method="post">
+		<h3>Search <small>You can search in quotes and <strong>tags</strong> both</small></h3>
+		<p></p>
+		<form action="{{ url_for('search') }}" name="searchForm" method="post">
 			{{ search_form.hidden_tag() }}
 			<div class="input-group">				
-				{{ search_form.search(class="form-control", placeholder="Searh in Tags or Quotes") }}
+				{{ search_form.search(class="form-control input-lg", placeholder="Searh in Tags or Quotes") }}
 				<span class="input-group-btn">
-					{{ search_form.submit(class="btn btn-primary") }}
+					{{ search_form.submit(class="btn btn-primary input-lg") }}
 				</span>
 			</div><!-- /input-group -->
-			</form>
+		</form>
 
-			{% for tagContainer in current_user.notes  %}
+		{% for tagContainer in current_user.notes  %}
 		{% for tagInner in tagContainer.tags %}
-			
+
 		<div class="center-block" style="margin-top:5px; display: inline-block;">
 			<span class="label label-default label-lg">
 				{% filter title %}
-					{{ tagInner }} 					
+				{{ tagInner }} 					
 				{% endfilter %}
 				
 				<!--<span class="label label-default">{{ tagContainer.tags|length }}</span>-->
 			</span>
-		
+
 
 		</div>
 		{% endfor %}
-	{% endfor %}
+		{% endfor %}
 	</div><!--row sonu-->
 
 	<div class="clearfix"></div>
 
 	{% for item in current_user.notes|sort(attribute='created_at',reverse=True)  %}
-	<div class="row animated fadeInUp" style="margin-top:20px;">		
-		<h3><strong>{{ item.title }}...</strong></h3>
+	<div class="row animated fadeInUp" style="margin-top:20px;">
+
+		<h3><strong>{{ item.content|truncate(120) }}...</strong></h3>
 		<blockquote>			
 			<span>
 				{% for itemT in item.tags  %}
@@ -52,21 +54,59 @@
 			<footer><cite title="Source Title">{{ item.URLLink }}</cite> <span class="pull-right">{{ item.created_at }} </span></footer>		
 			<div class="clearfix"></div>
 			<div class="btn-group" role="group" aria-label="*" style="margin-top:10px;">
-				<form action="/delete_quote" method="post">
-					{{ delete_quote.hidden_tag() }}
-					{{ delete_quote.submit(class="btn btn-default btn-sm") }}
 				
-				</form>				
+
+
+				<button id="deleteQuote" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#delete_quote_modal">Delete Quote <i class="fa fa-trash"></i> </button>
 				<!--<button type="button" class="btn btn-default btn-sm"><i class="fa fa-trash"></i> Delete</button>-->
 			</div>		
 		</blockquote>
 		
 	</div> <!--row sonu-->
 
+
+	<div class="modal fade" id="delete_quote_modal" tabindex="-1" role="dialog" aria-labelledby="adding">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="adding">ADD A QUOTE</h4>
+				</div>
+				<div class="modal-body">
+					<!--form goes here-->
+
+
+					Are you sure?
+					<small> This cannot be undone</small>
+
+					<!--form goes here-->
+				</div>
+				<div class="modal-footer">
+					<div class="pull-right"> 
+						<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+						<form action="{{ url_for('delete_quote', id=item.id) }}" method="post" class="pull-left" style="margin-left:8px;">
+							{{ delete_quote.hidden_tag() }}
+							{{ delete_quote.submit(class="btn btn-danger") }}
+
+						</form>
+					</div><!--pull right-->
+					<div class="clearfix"></div>
+
+				</div>
+			</div><!--modal content-->
+
+
+		</div><!--modal dialog-->
+	</div><!--modal-->
+	<!--ADD QUOTE-->
+
+
 	{% endfor %}
 
 	
-</div>
+</div><!--col-8-->
+
+<div class="clearfix"></div>
 
 
 <!--ADD QUOTE-->
@@ -94,14 +134,18 @@
 						{{form.content(class="form-control input-lg", placeholder="Quote in here")}}
 					</div>
 
-					<div class="form-group">	
-						{{form.tags.label}} <span class="text-danger"><strong>{{ regex }}</strong></span>
+					<div class="form-group">							
+						{{ form.tags.label }}
+						<abbr title="If you add with tags you can easly find when you search ( example:scholl note)" class="initialism"> <strong>TAGS</strong></abbr>  
+						<span class="text-danger"><strong>{{ regex }}</strong></span>
 						<div class="clearfix"></div>
+
 
 						{% if form.tags.errors %} 
 						<span class="text-danger"><strong>This field is required</strong></span>
 						{% endif %} 
-						{{form.tags(class="form-control input-md", placeholder="history, sociology, poetry, Goethe")}}
+						{{form.tags(class="form-control input-md", placeholder="If more than one siplit with comma. example; HISTORY, SOCIOLOGY")}}
+						<small>Don't use dot(.)</small>
 					</div>
 
 					<div class="clearfix"></div>
@@ -118,5 +162,9 @@
 	</div><!--modal dialog-->
 </div><!--modal-->
 <!--ADD QUOTE-->
+
+
+
+
 
 {% endblock content %}

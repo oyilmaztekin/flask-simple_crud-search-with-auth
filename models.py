@@ -6,15 +6,15 @@ from slugify import slugify
 from flask.ext.login import UserMixin
 from flask.ext.security import UserMixin
 from flask.ext.login import current_user
+from flask.ext.mongoengine import mongoengine
 
 class Note(db.Document):
     created_at = db.DateTimeField(default=datetime.datetime.now)
-    URLLink = db.URLField()
-    title = db.StringField(max_length=255)
+    URLLink = db.URLField(required=False)
+    #title = db.StringField(max_length=255)
     slug = db.StringField()
     content = db.StringField(required=True)
     tags = db.ListField(db.StringField())
-
     isArchived = db.BooleanField(default=False)
     isSecret = db.BooleanField(default=False)
 
@@ -34,11 +34,12 @@ class Note(db.Document):
     ]}
     """
     def __unicode__(self):
-        return '%s %s' % (self.title, self.content)
+        return self.content
+
 
     def save(self, *args, **kwargs):        
-        if not self.slug:
-            self.slug = slugify(self.title)
+        #if not self.slug:
+            #self.slug = slugify(self.title)
         #if not self.user:
             #self.user = current_user.id        
         return super(Note, self).save(*args, **kwargs)
@@ -80,10 +81,16 @@ class User(db.Document, UserMixin):
 
 class NoteRef(db.Document):
     created_at = db.DateTimeField(default=datetime.datetime.now)
-    note_id = db.ReferenceField('Note')
-    user_id = db.ReferenceField('User')
+    note_id = db.ReferenceField('Note', reverse_delete_rule=mongoengine.CASCADE)
+    user_id = db.ReferenceField('User', reverse_delete_rule=mongoengine.PULL)
+
+    def __str__(self):
+        return self.note_id
 
 class TagRef(db.Document):
     created_at = db.DateTimeField(default=datetime.datetime.now)
     tags = db.StringField(max_length=30)
-    note_id = db.ListField(db.ReferenceField('Note'))
+    note_id = db.ListField(db.ReferenceField('Note', reverse_delete_rule=mongoengine.CASCADE))
+
+    def __unicode__(self):
+        return self.tags

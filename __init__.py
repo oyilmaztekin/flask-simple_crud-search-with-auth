@@ -25,10 +25,12 @@ db = MongoEngine(app)
 app.config['SECURITY_RECOVERABLE'] = True
 app.session_interface = MongoEngineSessionInterface(db)
 
+import admin
 
 if __name__ == "__main__":
 	app.run(debug=True)
 
 import models
 import views
+
 

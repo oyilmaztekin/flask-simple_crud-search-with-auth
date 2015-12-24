@@ -2,16 +2,49 @@
 
 {% block content %}
 <span id="homepage-flag" style="display: none"></span>
+<div class="col-md-8 col-lg-8 col-md-offset-2 col-lg-offset-2">
+
+<div class="row animated fadeIn">
 <ol class="breadcrumb">
 	<li class="h3"><a href="{{url_for('profile')}}/{{ current_user.slug }}"><i class="fa fa-arrow-left"></i> All Quotes</a></li>
-	<li class="active">{{ data }}</li>
+	<li class="h3 active">Result of {{ data }}</li>
 </ol>
+		<h3>Search <small>You can search in quotes and <strong>tags</strong> both</small></h3>
+			<p></p>
+			<form action="{{ url_for('search') }}" name="searchForm" method="post">
+			{{ search_form.hidden_tag() }}
+			<div class="input-group">				
+				{{ search_form.search(class="form-control input-lg", placeholder="Searh in Tags or Quotes") }}
+				<span class="input-group-btn">
+					{{ search_form.submit(class="btn btn-primary input-lg") }}
+				</span>
+			</div><!-- /input-group -->
+			</form>
+
+			{% for tagContainer in current_user.notes  %}
+		{% for tagInner in tagContainer.tags %}
+			
+		<div class="center-block" style="margin-top:5px; display: inline-block;">
+			<span class="label label-default label-lg">
+				{% filter title %}
+					{{ tagInner }} 					
+				{% endfilter %}
+				
+				<!--<span class="label label-default">{{ tagContainer.tags|length }}</span>-->
+			</span>
+		
+
+		</div>
+		{% endfor %}
+	{% endfor %}
+	</div><!--row sonu-->
+
 
 {% if result != None %}	
 	{% for results in result  %}
 	<div class="row animated fadeInUp" style="margin-top:20px;">	
 		<blockquote>			
-			<h3><strong>{{ results.title }}...</strong></h3>
+			<h3><strong>{{ results.content|truncate(120) }}...</strong></h3>
 			<span>
 				{% for tags in results.tags  %}				
 				<span class="label label-default"> <i class="fa fa-tag"></i> {{ tags }}</span>	
@@ -36,6 +69,6 @@
 	
 	{% endif %}
 
-
+</div>
 
 {% endblock content %}

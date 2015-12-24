@@ -1,7 +1,22 @@
 {% extends "base.html" %}
 
 {% block content %}
-	<span id="homepage-flag" style="display: none"></span>
-	Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nemo, laborum ut temporibus ab quibusdam alias nulla magni tempore cum quaerat pariatur voluptatum. Sequi itaque, corporis doloribus, temporibus vitae provident possimus.
+<span id="homepage-flag" style="display: none"></span>
+<div class="col-md-8 col-lg-8 col-md-offset-2 col-lg-offset-2">	
+	<div class="row animated fadeIn">
+
+		<ol class="breadcrumb">
+			<li class="h3"><a href="{{url_for('profile')}}/{{ current_user.slug }}"><i class="fa fa-arrow-left"></i> All Quotes</a></li>
+			<li class="h3 active">Result of {{ data }}</li>
+		</ol>
+		
+		<h3><span class="text-info">This Quote deleted</span></h3>
+		<blockquote>
+		<p>
+			{{ note.content }}
+		</p>
+		</blockquote>
+	</div>
+</div>
 
 {% endblock %}

@@ -27,7 +27,7 @@ class SignUpForm(Form):
 
 class NoteForm(Form):
 	content = TextAreaField(u'Quote', [validators.Required()])	
-	tags = StringField(u'Tags')
+	tags = StringField(u'Use')
 	submit = SubmitField('Add This Quote')
 	class Meta():
 		__model__ = 'Note'
@@ -39,7 +39,7 @@ class SearchForm(Form):
 		__model__ = 'Note'
 
 class deleteQuoteForm(Form):
-	submit = SubmitField('Delete')
+	submit = SubmitField('Delete Quote')
 	class Mete():
 		__model__ = 'Note'
 

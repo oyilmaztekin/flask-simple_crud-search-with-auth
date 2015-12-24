@@ -11,3 +11,10 @@
 body{
 	background: #f0f0f0
 }
+
+::selection {
+  background: #ffffaa; /* WebKit/Blink Browsers */
+}
+::-moz-selection {
+  background: #ffffaa; /* Gecko Browsers */
+}

@@ -1,0 +1,25 @@
+<div class="modal fade" id="delete_quote_modal" tabindex="-1" role="dialog" aria-labelledby="adding">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="adding">ADD A QUOTE</h4>
+			</div>
+			<div class="modal-body">
+				<!--form goes here-->
+
+
+				Are yu sure?
+
+				<!--form goes here-->
+			</div>
+			
+		</div><!--modal content-->
+		<form action="{{ url_for('delete_quote', id=item.id) }}" method="post" class="pull-left" style="margin-left:8px;">
+				{{ delete_quote.hidden_tag() }}
+				{{ delete_quote.submit(class="btn btn-danger") }}
+					
+			</form>
+	</div><!--modal dialog-->
+</div><!--modal-->
+<!--ADD QUOTE-->

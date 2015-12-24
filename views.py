@@ -21,39 +21,43 @@ Email_Regex = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
 
 @app.route("/index", methods=['GET','POST'])
 @app.route("/", methods=['GET','POST'])
-def index():	
-	formS = SignUpForm()
+def index():
+	if current_user.is_authenticated:
+		return redirect(url_for('profile')+('/'+current_user.slug))
+	else:
 
-	if request.method == 'POST':
-		formS = SignUpForm(request.form)
-		
-		if formS.validate() == False:
-			flash('Something went wrong','danger')
-			return render_template('index.html', form=formS)
+		formS = SignUpForm()
 
-		if formS.validate_on_submit():					
-			hashash = formS.password.data
-			salt = uuid.uuid4().hex
-			hashed_password = hashlib.sha224(hashash + salt).hexdigest()
+		if request.method == 'POST':
+			formS = SignUpForm(request.form)
+			
+			if formS.validate() == False:
+				flash('Something went wrong','danger')
+				return render_template('index.html', form=formS)
 
-			form_email = formS.email.data
-			if not Email_Regex.match(form_email):
-				flash('Invalid email adress','danger')
-				return render_template("index.html", form=formS, title="Copylighter", regex="Invalid email adress")
+			if formS.validate_on_submit():					
+				hashash = formS.password.data
+				salt = uuid.uuid4().hex
+				hashed_password = hashlib.sha224(hashash + salt).hexdigest()
+
+				form_email = formS.email.data
+				if not Email_Regex.match(form_email):
+					flash('Invalid email adress','danger')
+					return render_template("index.html", form=formS, title="Copylighter", regex="Invalid email adress")
 
 
-			newuser = User(name=formS.name.data, email=formS.email.data, password=hashed_password)				
-			try:
-				newuser.save()
-				
-			except NotUniqueError:
-				flash('Username or email already exists','danger')
-				return render_template("index.html", form=formS, title="Copylighter")
+				newuser = User(name=formS.name.data, email=formS.email.data, password=hashed_password)				
+				try:
+					newuser.save()
+					
+				except NotUniqueError:
+					flash('Username or email already exists','danger')
+					return render_template("index.html", form=formS, title="Copylighter")
 
-			flash('Successfully registered. You can login now','success')
-			return redirect(url_for('login'))
+				flash('Successfully registered. You can login now','success')
+				return redirect(url_for('login'))
 
-	return render_template("index.html", form=formS, title="Copylighter")
+		return render_template("index.html", form=formS, title="Copylighter")
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -69,7 +73,8 @@ def server_error(e):
 @login_required
 def profile(slug):
 	#variables
-	form = NoteForm(prefix="form")	
+	form = NoteForm()
+
 	if request.method == 'POST':
 		form = NoteForm(request.form)
 
@@ -78,11 +83,10 @@ def profile(slug):
 			return render_template('profile.html', form=form, search_form=SearchForm(), delete_quote=deleteQuoteForm())
 
 		if form.validate_on_submit():				
-			sum_con = form.content.data[0:120]
 			tags = form.tags.data
 			tagList = tags.split(",")
 			
-			note = Note(content=form.content.data, tags=tagList, title=sum_con)		
+			note = Note(content=form.content.data, tags=tagList)		
 			note.save()
 			
 			current_user.notes.append(note)
@@ -104,14 +108,13 @@ def profile(slug):
 			flash('Quote saved successfully.','success')
 			return render_template('profile.html', form=form, search_form=SearchForm(), delete_quote=deleteQuoteForm())
 
-	return render_template("profile.html", title=current_user.name, form=form, search_form=SearchForm(), delete_quote=deleteQuoteForm() )
+	return render_template("profile.html", title=current_user.name, form=form, search_form=SearchForm(), delete_quote=deleteQuoteForm())
 
 
 @app.route("/search" ,methods=['POST'])
 @login_required
 def search():	
 	searchForm = SearchForm(request.form)
-	
 	if request.method == 'POST':
 		searchForm = SearchForm(request.form)
 		searchedby = searchForm.search.data
@@ -129,11 +132,32 @@ def search():
 
 	return render_template("search.html", title=searchedby, search_form=searchForm, result=userNote, data=searchedby)
 
-@app.route("/delete_quote" ,methods=['POST'])
+
+@app.route("/delete_quote/<string:id>" ,methods=['POST'])
 @login_required
-def delete_quote():
+def delete_quote(id):
+	note = Note.objects(id=id).first()
+
 	deleteNote = deleteQuoteForm()
-	return render_template("delete.html", title="delete", delete_note=deleteNote )	
+	if request.method == 'POST':
+		deleteNote =deleteQuoteForm(request.form)
+
+		if deleteNote.validate == False:
+			flash('Faliure','danger')
+			return redirect(url_for('profile')+('/'+current_user.slug))
+
+		if deleteNote.validate_on_submit():
+			note = Note.objects(id=id).first()			
+
+			current_user.notes.remove(note) 
+			current_user.save()
+			
+			note.delete()
+
+			flash('successfully deleted','warning')
+
+
+	return render_template("delete.html", title="delete", delete_note=deleteNote, note=note )	
 
 @login_manager.user_loader
 def load_user(id):
