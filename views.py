@@ -122,7 +122,7 @@ def search():
 		if searchForm.validate() == False:
 			flash("Empty search.",'warning')
 			userNote = Note.objects.search_text(searchForm.search.data).as_pymongo()
-
+ 
 
 		if searchForm.validate_on_submit():
 			#noteResult = Note.objects.search_text(content=SearchForm.search.data).first()
