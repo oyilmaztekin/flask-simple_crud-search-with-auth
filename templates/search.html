@@ -41,24 +41,24 @@
 
 
 {% if result != None %}	
-	{% for results in result  %}
+	{% for item in result  %}
 	<div class="row animated fadeInUp" style="margin-top:20px;">	
 		<blockquote>			
-			<h3><strong>{{ results.content|truncate(120) }}...</strong></h3>
+			<h3><strong>{{ item.content|truncate(120) }}...</strong></h3>
 			<span>
-				{% for tags in results.tags  %}				
+				{% for tags in item.tags  %}				
 				<span class="label label-default"> <i class="fa fa-tag"></i> {{ tags }}</span>	
 				{% endfor %}
 			</span>
 			<p></p>
-			{{ results.content }}
-			<footer><cite title="Source Title">{{ results.URLLink }}</cite> <span class="pull-right">{{ results.created_at }} </span></footer>	
-			<div class="btn-group" role="group" aria-label="*" style="margin-top:10px;">
-				<button type="button" class="btn btn-default btn-sm"><i class="fa fa-share-alt"></i> Share</button>
-				<button type="button" class="btn btn-default btn-sm"><i class="fa fa-trash"></i> Delete</button>
-			</div>		
+			{{ item.content }}
+			<footer><cite title="Source Title">{{ item.URLLink }}</cite> <span class="pull-right">{{ item.created_at }} </span></footer>	
+		
+
 		</blockquote>
 		</div>
+		
+
 		{% else %}
 		
 		<div class="alert alert-warning" role="alert">We didn't find anythig</div>

@@ -130,7 +130,7 @@ def search():
 			#document = notes.objects(content=searchForm.search.data).first()
 			#print userNote
 
-	return render_template("search.html", title=searchedby, search_form=searchForm, result=userNote, data=searchedby)
+	return render_template("search.html", title=searchedby, search_form=searchForm, result=userNote)
 
 
 @app.route("/delete_quote/<string:id>" ,methods=['POST'])
