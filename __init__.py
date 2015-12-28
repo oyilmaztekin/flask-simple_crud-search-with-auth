@@ -5,6 +5,7 @@ from flask.ext.mongoengine import MongoEngine, MongoEngineSessionInterface
 from flask_login import LoginManager
 import sys
 from flask.ext.security import Security
+from flask_debugtoolbar import DebugToolbarExtension
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -16,16 +17,22 @@ app.config["MONGODB_SETTINGS"] = {
 'username':'copyOz',
 'password':'7e0522bfd98d2051a20a0aca5fb3899f'
 }
+
 app.config["SECRET_KEY"] = '6cf34ed05e241ac72456425779220bfeaf3557ef8371bed4'
+#app.config["DEBUG"] = True
+
 login_manager = LoginManager()
 login_manager.session_protection = "strong"
 login_manager.init_app(app)
+
+
 SECURITY_RECOVERABLE = True
 db = MongoEngine(app)
 app.config['SECURITY_RECOVERABLE'] = True
 app.session_interface = MongoEngineSessionInterface(db)
 
-import admin
+toolbar = DebugToolbarExtension(app)
+#import admin
 
 if __name__ == "__main__":
 	app.run(debug=True)
