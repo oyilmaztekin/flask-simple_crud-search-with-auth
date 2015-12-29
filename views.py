@@ -119,16 +119,20 @@ def search():
 		searchForm = SearchForm(request.form)
 		searchedby = searchForm.search.data
 
-		if searchForm.validate() == False:
-			flash("Empty search.",'warning')
-			userNote = Note.objects.search_text(searchForm.search.data).as_pymongo()
- 
+		try:
+			if searchForm.validate() == False:
+				flash("Empty search.",'warning')
+				userNote = Note.objects.search_text(searchForm.search.data).as_pymongo()
+	 
 
-		if searchForm.validate_on_submit():
-			#noteResult = Note.objects.search_text(content=SearchForm.search.data).first()
-			userNote = Note.objects.search_text(searchForm.search.data).as_pymongo()
-			#document = notes.objects(content=searchForm.search.data).first()
-			#print userNote
+			if searchForm.validate_on_submit():
+				#noteResult = Note.objects.search_text(content=SearchForm.search.data).first()
+				userNote = Note.objects.search_text(searchForm.search.data).as_pymongo()
+				#document = notes.objects(content=searchForm.search.data).first()
+				#print userNote
+		except OperationFailure:
+			flash("Search has a problem now", "danger")
+			return redirect(url_for('profile')+('/'+current_user.slug))
 
 	return render_template("search.html", title=searchedby, search_form=searchForm, result=userNote)
 
