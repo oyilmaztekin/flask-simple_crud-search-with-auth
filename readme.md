@@ -1,6 +1,3 @@
-
-
-
 #Copylighter#
 
 ##DATABASE MODEL##
