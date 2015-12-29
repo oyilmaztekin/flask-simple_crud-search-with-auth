@@ -126,8 +126,8 @@ def search():
 	 
 
 			if searchForm.validate_on_submit():
-				#noteResult = Note.objects.search_text(content=SearchForm.search.data).first()
-				userNote = Note.objects.search_text(searchForm.search.data).as_pymongo()
+				userNote = Note.objects.search_text(content=SearchForm.search.data).first()
+				#userNote = Note.objects.search_text(searchForm.search.data).as_pymongo()
 				#document = notes.objects(content=searchForm.search.data).first()
 				#print userNote
 		except OperationFailure:
