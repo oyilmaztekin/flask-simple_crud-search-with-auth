@@ -11,18 +11,11 @@ from flask.ext.mongoengine import mongoengine
 class Note(db.Document):
     created_at = db.DateTimeField(default=datetime.datetime.now)
     URLLink = db.URLField(required=False)
-    #title = db.StringField(max_length=255)
     slug = db.StringField()
     content = db.StringField(required=True)
     tags = db.ListField(db.StringField())
-    isArchived = db.BooleanField(default=False)
     isSecret = db.BooleanField(default=False)
-
-    #meta = {
-      #  'ordering': ['-created_at'],
-     #   'allow_inheritance': True
-    #}
-    """
+    
     meta = {'indexes': [
         {'fields': ["$tags"],
          'ordering': ['-created_at'],
@@ -32,7 +25,7 @@ class Note(db.Document):
          'weights': {'tags': 10}
         }
     ]}
-    """
+    
     def __unicode__(self):
         return self.content
 

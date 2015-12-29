@@ -98,12 +98,6 @@ def profile(slug):
 			for item in tagList:
 				tagRef = TagRef(tags=item, note_id=[note.id,])
 				tagRef.save()
-
-			#try:
-				#note.save()
-			#except ValidationError:
-				#flash('Something went wrong.','danger')
-				#return render_template('profile.html', form=form)
 			
 			flash('Quote saved successfully.','success')
 			return render_template('profile.html', form=form, search_form=SearchForm(), delete_quote=deleteQuoteForm())
@@ -119,20 +113,21 @@ def search():
 		searchForm = SearchForm(request.form)
 		searchedby = searchForm.search.data
 
-		try:
-			if searchForm.validate() == False:
-				flash("Empty search.",'warning')
-				userNote = Note.objects.search_text(searchForm.search.data).as_pymongo()
-	 
+		if searchForm.validate() == False:
+			flash("Empty search.",'warning')
+			userNote = Note.objects.search_text(searchForm.search.data).as_pymongo()
+ 
 
-			if searchForm.validate_on_submit():
-				userNote = Note.objects.search_text(content=SearchForm.search.data).first()
-				#userNote = Note.objects.search_text(searchForm.search.data).as_pymongo()
-				#document = notes.objects(content=searchForm.search.data).first()
-				#print userNote
-		except OperationFailure:
-			flash("Search has a problem now", "danger")
-			return redirect(url_for('profile')+('/'+current_user.slug))
+		if searchForm.validate_on_submit():
+			#noteResult = Note.objects.search_text(content=SearchForm.search.data).first()
+			try:
+				userNote = Note.objects.search_text(searchForm.search.data).as_pymongo()
+			except OperationFailure:
+				flash("haydeee","danger")
+				render_template("search.html", title=searchedby, search_form=searchForm, result=userNote)
+			#document = notes.objects(content=searchForm.search.data).first()
+			#print userNote
+
 
 	return render_template("search.html", title=searchedby, search_form=searchForm, result=userNote)
 
