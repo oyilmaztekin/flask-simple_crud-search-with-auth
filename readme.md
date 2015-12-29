@@ -6,44 +6,49 @@ Quote
 
 
  	:::python
-    class Note(db.Document):
-	    created_at = db.DateTimeField(default=datetime.datetime.now)
-	    URLLink = db.URLField(required=False)
-	    slug = db.StringField()
-	    content = db.StringField(required=True)
-	    tags = db.ListField(db.StringField())
-	    isArchived = db.BooleanField(default=False)
-	    isSecret = db.BooleanField(default=False)
+	    class Note(db.Document):
+		    created_at = db.DateTimeField(default=datetime.datetime.now)
+		    URLLink = db.URLField(required=False)
+		    slug = db.StringField()
+		    content = db.StringField(required=True)
+		    tags = db.ListField(db.StringField())
+		    isArchived = db.BooleanField(default=False)
+		    isSecret = db.BooleanField(default=False)
 
 
 Example Json
+
+
 	:::javascript	
-{
-    "_id" : ObjectId("567ad55982ab1c146e85c583"),
-    "created_at" : ISODate("2015-12-23T19:09:45.293Z"),
-    "slug" : "proje-odevi-ve-performans-gorevi-1-sinif-proje-odevi-1-sinif-performans-gorevi-2-sinif-proje-odevi-2-sinif-pe",
-    "content" : "PROJE ÖDEVİ VE PERFORMANS GÖREVİ. 1. SINIF PROJE ÖDEVİ · 1. SINIF PERFORMANS GÖREVİ · 2. SINIF PROJE ÖDEVİ · 2. SINIF PERFORMANS ...\r\n",
-    "tags" : [ 
-        "7.sınıf"
-    ],
-    "isArchived" : false,
-    "isSecret" : false
-}
+		{
+		    "_id" : ObjectId("567ad55982ab1c146e85c583"),
+		    "created_at" : ISODate("2015-12-23T19:09:45.293Z"),
+		    "slug" : "proje-odevi-ve-performans-gorevi-1-sinif-proje-odevi-1-sinif-performans-gorevi-2-sinif-proje-odevi-2-sinif-pe",
+		    "content" : "PROJE ÖDEVİ VE PERFORMANS GÖREVİ. 1. SINIF PROJE ÖDEVİ · 1. SINIF PERFORMANS GÖREVİ · 2. SINIF PROJE ÖDEVİ · 2. SINIF PERFORMANS ...\r\n",
+		    "tags" : [ 
+		        "7.sınıf"
+		    ],
+		    "isArchived" : false,
+		    "isSecret" : false
+		}
 
 Quoteların kim tarafından girildiğini takip edebilmek için. Hangi quote hangi usera ait? ForeignKey mongodb de olmadığı için ReferenceField olarak ilişkilendiriyoruz.
+	
+
 	:::python
 		class NoteRef(db.Document):
-		    created_at = db.DateTimeField(default=datetime.datetime.now)
-		    note_id = db.ReferenceField('Note', reverse_delete_rule=mongoengine.CASCADE)
-		    user_id = db.ReferenceField('User', reverse_delete_rule=mongoengine.PULL)
+			created_at = db.DateTimeField(default=datetime.datetime.now)
+			note_id = db.ReferenceField('Note', reverse_delete_rule=mongoengine.CASCADE)
+			user_id = db.ReferenceField('User', reverse_delete_rule=mongoengine.PULL)
 
 Taglere ait notları listelemek ve taglerin takibini yapabilmek için... note_id kısmındaki ListField gereksiz. Ancak silersem sıkıntı çıkıyor. Böyle devam. İleride bir tage birden fazla not(quote) da ilişkilendirilebilir.
 
+	
 	:::python
 		class TagRef(db.Document):
-		    created_at = db.DateTimeField(default=datetime.datetime.now)
-		    tags = db.StringField(max_length=30)
-		    note_id = db.ListField(db.ReferenceField('Note', reverse_delete_rule=mongoengine.CASCADE))
+			created_at = db.DateTimeField(default=datetime.datetime.now)
+			tags = db.StringField(max_length=30)
+			note_id = db.ListField(db.ReferenceField('Note', reverse_delete_rule=mongoengine.CASCADE))
 
 reverse delete rule??
 
@@ -138,6 +143,7 @@ slugify kullanıcı adı eğer boşluk bırakılarak girildiyse link olarak kull
 
 Add Quote View views.py
 	
+	
 	:::python	
 		if form.validate_on_submit():				
 			tags = form.tags.data
@@ -162,6 +168,8 @@ Add Quote View views.py
 
 
 Tagler, virgülden itibaren ayırarak ayrı ayrı insert edilir. Aşağıdaki işlemde quote note collection ına kaydedilir.
+	
+
 	:::python
 		tags = form.tags.data
 		tagList = tags.split(",")
@@ -170,28 +178,38 @@ Tagler, virgülden itibaren ayırarak ayrı ayrı insert edilir. Aşağıdaki i�
 		note.save()
 
 Kaydedilen bu not usera embed edilir.
+	
+
 	:::python
 		current_user.notes.append(note)
 		current_user.save() 
 
 Kaydedilen not NoteRef collection ına referans id leri ile eklenir.
+	
+
 	:::python
 		noteRef = NoteRef(note_id=note.id, user_id=current_user.id)
 		noteRef.save()
 
 Kaydedilen notun içerisinden tagler for döngüsüyle List içerisinden ayrıştırılarak ayrı ayrı row olarak insert edilirler ve her tag rowuna aynı quote id si ile  ilişkilendirilir.
+	
+
 	:::python
 		for item in tagList:
 			tagRef = TagRef(tags=item, note_id=[note.id,])
 			tagRef.save()
 
 Tagler, virgülden itibaren ayırarak ayrı ayrı insert edilir.
+	
+
 	:::python
 		current_user.notes.append(note)
 		current_user.save() 
 
 
 Register - views.py
+	
+
 	:::python
 		if formS.validate_on_submit():					
 			hashash = formS.password.data
@@ -214,6 +232,8 @@ Register - views.py
 				return render_template("register.html", form=formS, title="Copylighter")
 
 Password ün hashlenmesi
+	
+
 	:::python
 		hashash = formS.password.data
 		salt = uuid.uuid4().hex
