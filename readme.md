@@ -3,7 +3,9 @@
 DATABASE MODEL models.py
 
 Quote
- :::python
+
+
+ 	:::python
     class Note(db.Document):
 	    created_at = db.DateTimeField(default=datetime.datetime.now)
 	    URLLink = db.URLField(required=False)
@@ -35,7 +37,7 @@ Quoteların kim tarafından girildiğini takip edebilmek için. Hangi quote hang
 		    note_id = db.ReferenceField('Note', reverse_delete_rule=mongoengine.CASCADE)
 		    user_id = db.ReferenceField('User', reverse_delete_rule=mongoengine.PULL)
 
-	Taglere ait notları listelemek ve taglerin takibini yapabilmek için... note_id kısmındaki ListField gereksiz. Ancak silersem sıkıntı çıkıyor. Böyle devam. İleride bir tage birden fazla not(quote) da ilişkilendirilebilir.
+Taglere ait notları listelemek ve taglerin takibini yapabilmek için... note_id kısmındaki ListField gereksiz. Ancak silersem sıkıntı çıkıyor. Böyle devam. İleride bir tage birden fazla not(quote) da ilişkilendirilebilir.
 
 	:::python
 		class TagRef(db.Document):
@@ -44,6 +46,8 @@ Quoteların kim tarafından girildiğini takip edebilmek için. Hangi quote hang
 		    note_id = db.ListField(db.ReferenceField('Note', reverse_delete_rule=mongoengine.CASCADE))
 
 reverse delete rule??
+
+
 	:::python
 		note_id = db.ReferenceField('Note', reverse_delete_rule=mongoengine.CASCADE)
 		user_id = db.ReferenceField('User', reverse_delete_rule=mongoengine.PULL)
@@ -52,6 +56,8 @@ reverse delete rule: kullanıcı not eklediğinde hem notref, hem de tagref coll
 
 
 User Model
+
+
 	:::python
    		class User(db.Document, UserMixin):    
 		    created_at = db.DateTimeField(default=datetime.datetime.now)
@@ -71,6 +77,8 @@ User Model
 		        return super(User, self).save(*args, **kwargs)
 
 EmbeddedDocumentField??? 
+
+
 	:::python 
 		class User(db.Document, UserMixin):    
 			notes = db.ListField(db.EmbeddedDocumentField('Note'))
@@ -79,6 +87,8 @@ NoSQl yapıda relationdan ziyade embedding var. Bu da embed edilmek istenen tabl
 
 
 def save metodu ile eklenen register olan user collection ına yapılan işlemler
+
+
 	:::python
 		def save(self, *args, **kwargs):
 		    defaultRole = ("active",)
@@ -89,11 +99,16 @@ def save metodu ile eklenen register olan user collection ına yapılan işlemle
 		        return super(User, self).save(*args, **kwargs)
 
 slugify kullanıcı adı eğer boşluk bırakılarak girildiyse link olarak kullanılabilir hale getirir?
+
+
 	:::javascript
 		Bugün günlerden pazar
 		bugun-gunlerden-pazar
 
+
 Örnek user collection
+
+
 	:::javascript
 		{
 		    "_id" : ObjectId("567ad33682ab1c0fb2e33138"),
@@ -122,7 +137,8 @@ slugify kullanıcı adı eğer boşluk bırakılarak girildiyse link olarak kull
 
 
 Add Quote View views.py
-	:::python
+	
+	:::python	
 		if form.validate_on_submit():				
 			tags = form.tags.data
 			tagList = tags.split(",")
