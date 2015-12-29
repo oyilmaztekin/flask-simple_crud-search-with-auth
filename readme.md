@@ -1,9 +1,11 @@
 
 
-DATABASE MODEL models.py
 
-Quote
+#Copylighter#
 
+##DATABASE MODEL##
+
+###Quote - models.py###
 
  	:::python
 	    class Note(db.Document):
@@ -16,7 +18,7 @@ Quote
 		    isSecret = db.BooleanField(default=False)
 
 
-Example Json
+###Example Json###
 
 
 	:::javascript	
@@ -32,7 +34,7 @@ Example Json
 		    "isSecret" : false
 		}
 
-Quoteların kim tarafından girildiğini takip edebilmek için. Hangi quote hangi usera ait? ForeignKey mongodb de olmadığı için ReferenceField olarak ilişkilendiriyoruz.
+*Quoteların kim tarafından girildiğini takip edebilmek için. Hangi quote hangi usera ait? ForeignKey mongodb de olmadığı için ReferenceField olarak ilişkilendiriyoruz.*
 	
 
 	:::python
@@ -41,7 +43,7 @@ Quoteların kim tarafından girildiğini takip edebilmek için. Hangi quote hang
 			note_id = db.ReferenceField('Note', reverse_delete_rule=mongoengine.CASCADE)
 			user_id = db.ReferenceField('User', reverse_delete_rule=mongoengine.PULL)
 
-Taglere ait notları listelemek ve taglerin takibini yapabilmek için... note_id kısmındaki ListField gereksiz. Ancak silersem sıkıntı çıkıyor. Böyle devam. İleride bir tage birden fazla not(quote) da ilişkilendirilebilir.
+*Taglere ait notları listelemek ve taglerin takibini yapabilmek için... note_id kısmındaki ListField gereksiz. Ancak silersem sıkıntı çıkıyor. Böyle devam. İleride bir tage birden fazla not(quote) da ilişkilendirilebilir.*
 
 	
 	:::python
@@ -50,18 +52,17 @@ Taglere ait notları listelemek ve taglerin takibini yapabilmek için... note_id
 			tags = db.StringField(max_length=30)
 			note_id = db.ListField(db.ReferenceField('Note', reverse_delete_rule=mongoengine.CASCADE))
 
-reverse delete rule??
+**reverse delete rule??**
 
 
 	:::python
 		note_id = db.ReferenceField('Note', reverse_delete_rule=mongoengine.CASCADE)
 		user_id = db.ReferenceField('User', reverse_delete_rule=mongoengine.PULL)
 
-reverse delete rule: kullanıcı not eklediğinde hem notref, hem de tagref collection lara(table) user_id, note_id ve tag bilgileri relation olarak ekleniyor. reverse_delete_rule kullanıcı girdiği notu silmek istediğinde noteRef ve Tagref table larında oluşturulan bağlantıları da siliyor. 
+*reverse delete rule: kullanıcı not eklediğinde hem notref, hem de tagref collection lara(table) user_id, note_id ve tag bilgileri relation olarak ekleniyor. reverse_delete_rule kullanıcı girdiği notu silmek istediğinde noteRef ve Tagref table larında oluşturulan bağlantıları da siliyor. *
 
 
-User Model
-
+###User Model###
 
 	:::python
    		class User(db.Document, UserMixin):    
@@ -81,17 +82,17 @@ User Model
 		            self.roles = defaultRole
 		        return super(User, self).save(*args, **kwargs)
 
-EmbeddedDocumentField??? 
+**EmbeddedDocumentField???** 
 
 
 	:::python 
 		class User(db.Document, UserMixin):    
 			notes = db.ListField(db.EmbeddedDocumentField('Note'))
 
-NoSQl yapıda relationdan ziyade embedding var. Bu da embed edilmek istenen table(collection) ı mevcut collection ın içerisine basıyor. 
+*NoSQl yapıda relationdan ziyade embedding var. Bu da embed edilmek istenen table(collection) ı mevcut collection ın içerisine basıyor. *
 
 
-def save metodu ile eklenen register olan user collection ına yapılan işlemler
+**def save metodu ile eklenen register olan user collection ına yapılan işlemler**
 
 
 	:::python
@@ -103,7 +104,7 @@ def save metodu ile eklenen register olan user collection ına yapılan işlemle
 		            self.roles = defaultRole
 		        return super(User, self).save(*args, **kwargs)
 
-slugify kullanıcı adı eğer boşluk bırakılarak girildiyse link olarak kullanılabilir hale getirir?
+*slugify kullanıcı adı eğer boşluk bırakılarak girildiyse link olarak kullanılabilir hale getirir?*
 
 
 	:::javascript
@@ -111,7 +112,7 @@ slugify kullanıcı adı eğer boşluk bırakılarak girildiyse link olarak kull
 		bugun-gunlerden-pazar
 
 
-Örnek user collection
+###Örnek user collection###
 
 
 	:::javascript
@@ -141,7 +142,8 @@ slugify kullanıcı adı eğer boşluk bırakılarak girildiyse link olarak kull
 		}
 
 
-Add Quote View views.py
+##VIEWS - CONTROLLER##
+###Add Quote View views.py###
 	
 	
 	:::python	
@@ -167,7 +169,7 @@ Add Quote View views.py
 			return render_template('profile.html', form=form, search_form=SearchForm(), delete_quote=deleteQuoteForm())
 
 
-Tagler, virgülden itibaren ayırarak ayrı ayrı insert edilir. Aşağıdaki işlemde quote note collection ına kaydedilir.
+**Tagler, virgülden itibaren ayırarak ayrı ayrı insert edilir. Aşağıdaki işlemde quote note collection ına kaydedilir.**
 	
 
 	:::python
@@ -177,21 +179,21 @@ Tagler, virgülden itibaren ayırarak ayrı ayrı insert edilir. Aşağıdaki i�
 		note = Note(content=form.content.data, tags=tagList)		
 		note.save()
 
-Kaydedilen bu not usera embed edilir.
+***Kaydedilen bu not usera embed edilir.***
 	
 
 	:::python
 		current_user.notes.append(note)
 		current_user.save() 
 
-Kaydedilen not NoteRef collection ına referans id leri ile eklenir.
+*Kaydedilen not NoteRef collection ına referans id leri ile eklenir.*
 	
 
 	:::python
 		noteRef = NoteRef(note_id=note.id, user_id=current_user.id)
 		noteRef.save()
 
-Kaydedilen notun içerisinden tagler for döngüsüyle List içerisinden ayrıştırılarak ayrı ayrı row olarak insert edilirler ve her tag rowuna aynı quote id si ile  ilişkilendirilir.
+*Kaydedilen notun içerisinden tagler for döngüsüyle List içerisinden ayrıştırılarak ayrı ayrı row olarak insert edilirler ve her tag rowuna aynı quote id si ile  ilişkilendirilir.*
 	
 
 	:::python
@@ -207,7 +209,7 @@ Tagler, virgülden itibaren ayırarak ayrı ayrı insert edilir.
 		current_user.save() 
 
 
-Register - views.py
+###Register - views.py###
 	
 
 	:::python
@@ -231,7 +233,8 @@ Register - views.py
 				flash('Username or email already exists','danger')
 				return render_template("register.html", form=formS, title="Copylighter")
 
-Password ün hashlenmesi
+
+**Password ün hashlenmesi**
 	
 
 	:::python
