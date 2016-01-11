@@ -15,14 +15,15 @@ class Note(db.Document):
     content = db.StringField(required=True)
     tags = db.ListField(db.StringField())
     isSecret = db.BooleanField(default=False)
+    isArchived = db.BooleanField(default=False)
     
     meta = {'indexes': [
-        {'fields': ["$tags"],
+        {'fields': ["$content","$tags"],
          'ordering': ['-created_at'],
          'default_language': 'english',
          'ordering': ['-created_at'],
          'allow_inheritance': True,
-         'weights': {'tags': 10}
+         'weights': {'content': 10, 'tags':5}
         }
     ]}
     

@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 # coding:utf-8
-from flask import Flask
+from flask import Flask, request
 from flask.ext.mongoengine import MongoEngine, MongoEngineSessionInterface
 from flask_login import LoginManager
 import sys
@@ -11,10 +11,12 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 
 app = Flask(__name__)
+
 app.config["MONGODB_SETTINGS"] = {
 'DB': "copylighter",
 'host':'mongodb://localhost/copylighter',
 'username':'copyOz',
+'port':27017,
 'password':'7e0522bfd98d2051a20a0aca5fb3899f'
 }
 
@@ -41,6 +43,7 @@ app.session_interface = MongoEngineSessionInterface(db)
 
 toolbar = DebugToolbarExtension(app)
 #import admin
+
 
 if __name__ == "__main__":
 	app.run(debug=True)
