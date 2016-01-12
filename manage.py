@@ -65,5 +65,8 @@ manager.add_command("runserver", Server(
     host = '0.0.0.0')
 )
 
+manager.add_command("runserver", GunicornServer())
+
+
 if __name__ == "__main__":
     manager.run()
