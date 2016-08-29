@@ -13,7 +13,7 @@
 			<p></p>
 			<form action="{{ url_for('search') }}" name="searchForm" method="post">
 			{{ search_form.hidden_tag() }}
-			<div class="input-group">				
+			<div class="input-group">
 				{{ search_form.search(class="form-control input-lg", placeholder="Searh in Tags or Quotes") }}
 				<span class="input-group-btn">
 					{{ search_form.submit(class="btn btn-primary input-lg") }}
@@ -23,16 +23,16 @@
 
 			{% for tagContainer in current_user.notes  %}
 		{% for tagInner in tagContainer.tags %}
-			
+
 		<div class="center-block" style="margin-top:5px; display: inline-block;">
 			<span class="label label-default label-lg">
 				{% filter title %}
-					{{ tagInner }} 					
+					{{ tagInner }}
 				{% endfilter %}
-				
+
 				<!--<span class="label label-default">{{ tagContainer.tags|length }}</span>-->
 			</span>
-		
+
 
 		</div>
 		{% endfor %}
@@ -40,33 +40,41 @@
 	</div><!--row sonu-->
 
 
-{% if result != None %}	
+{% if result != None %}
 	{% for item in result  %}
-	<div class="row animated fadeInUp" style="margin-top:20px;">	
-		<blockquote>			
+	<div class="row animated fadeInUp" style="margin-top:20px;">
+		<blockquote>
 			<h3><strong>{{ item.content|truncate(120) }}...</strong></h3>
 			<span>
-				{% for tags in item.tags  %}				
-				<span class="label label-default"> <i class="fa fa-tag"></i> {{ tags }}</span>	
+				{% for tags in item.tags  %}
+				<span class="label label-default"> <i class="fa fa-tag"></i> {{ tags }}</span>
 				{% endfor %}
 			</span>
 			<p></p>
 			{{ item.content }}
-			<footer><cite title="Source Title">{{ item.URLLink }}</cite> <span class="pull-right">{{ item.created_at }} </span></footer>	
-		
+			<footer><cite title="Source Title">{{ item.URLLink }}</cite> <span class="pull-right">{{ item.created_at }} </span></footer>
+			<div class="clearfix"></div>
+			<div class="btn-group" role="group" aria-label="*" style="margin-top:10px;">
+
+
+
+				<button id="deleteQuote" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#delete_quote_modal">Delete Quote <i class="fa fa-trash"></i> </button>
+				<!--<button type="button" class="btn btn-default btn-sm"><i class="fa fa-trash"></i> Delete</button>-->
+			</div>
 
 		</blockquote>
 		</div>
-		
+	{% include "delete_modal.html" %}
 
 		{% else %}
-		
+
 		<div class="alert alert-warning" role="alert">We didn't find anythig</div>
 
-	
+
+
 	{% endfor %}
 
-	
+
 	{% endif %}
 
 </div>

@@ -6,12 +6,19 @@ from flask_login import LoginManager
 import sys
 from flask.ext.security import Security
 from flask_debugtoolbar import DebugToolbarExtension
+from flask_humanize import Humanize
+
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
+
 app = Flask(__name__)
 
+humanize = Humanize(app)
+
+
+#normal hali
 app.config["MONGODB_SETTINGS"] = {
 'DB': "copylighter",
 'host':'mongodb://localhost/copylighter',
@@ -50,5 +57,3 @@ if __name__ == "__main__":
 
 import models
 import views
-
-

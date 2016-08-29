@@ -16,7 +16,7 @@ class Note(db.Document):
     tags = db.ListField(db.StringField())
     isSecret = db.BooleanField(default=False)
     isArchived = db.BooleanField(default=False)
-    
+
     meta = {'indexes': [
         {'fields': ["$content","$tags"],
          'ordering': ['-created_at'],
@@ -26,19 +26,19 @@ class Note(db.Document):
          'weights': {'content': 10, 'tags':5}
         }
     ]}
-    
+
     def __unicode__(self):
         return self.content
 
 
-    def save(self, *args, **kwargs):        
+    def save(self, *args, **kwargs):
         #if not self.slug:
             #self.slug = slugify(self.title)
         #if not self.user:
-            #self.user = current_user.id        
+            #self.user = current_user.id
         return super(Note, self).save(*args, **kwargs)
 
-class User(db.Document, UserMixin):    
+class User(db.Document, UserMixin):
     created_at = db.DateTimeField(default=datetime.datetime.now)
     name = db.StringField(max_length=30, required=True, unique=True, help_text="Username or Name-Lastname")
     email = db.StringField(max_length=100, required=True, help_text="Email")
@@ -60,13 +60,13 @@ class User(db.Document, UserMixin):
 
     def is_authenticated(self):
         return True
- 
+
     def is_active(self):
         return True
 
     def is_anonymous(self):
         return False
- 
+
     def get_id(self):
         return unicode(str(self.id))
 

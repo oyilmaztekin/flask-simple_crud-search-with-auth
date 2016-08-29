@@ -15,9 +15,15 @@ from flask.ext.login import current_user
 from collections import Counter
 from pymongo.errors import OperationFailure
 
+
+
 username = ""
 Email_Regex = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
 )
+
+URl_Regex = re.compile("http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+")
+
+
 
 @app.route("/index", methods=['GET','POST'])
 @app.route("/", methods=['GET','POST'])
@@ -30,12 +36,12 @@ def index():
 
 		if request.method == 'POST':
 			formS = SignUpForm(request.form)
-			
+
 			if formS.validate() == False:
 				flash('Something went wrong','danger')
 				return render_template('index.html', form=formS)
 
-			if formS.validate_on_submit():					
+			if formS.validate_on_submit():
 				hashash = formS.password.data
 				salt = uuid.uuid4().hex
 				hashed_password = hashlib.sha224(hashash + salt).hexdigest()
@@ -46,10 +52,10 @@ def index():
 					return render_template("index.html", form=formS, title="Copylighter", regex="Invalid email adress")
 
 
-				newuser = User(name=formS.name.data, email=formS.email.data, password=hashed_password)				
+				newuser = User(name=formS.name.data, email=formS.email.data, password=hashed_password)
 				try:
 					newuser.save()
-					
+
 				except NotUniqueError:
 					flash('Username or email already exists','danger')
 					return render_template("index.html", form=formS, title="Copylighter")
@@ -82,23 +88,27 @@ def profile(slug):
 			flash("Something went wrong.",'danger')
 			return render_template('profile.html', form=form, search_form=SearchForm(), delete_quote=deleteQuoteForm())
 
-		if form.validate_on_submit():				
+		if form.validate_on_submit():
+			form_urlLink = form.URLLink.data
+			if not URl_Regex.match(form_urlLink):
+				flash('Invalid URL adress','danger')
+				return render_template("profile.html", form=form, search_form=SearchForm(), regex="Invalid URL adress",delete_quote=deleteQuoteForm())
 			tags = form.tags.data
 			tagList = tags.split(",")
-			
-			note = Note(content=form.content.data, tags=tagList)		
+
+			note = Note(content=form.content.data, tags=tagList, URLLink=form.URLLink.data)
 			note.save()
-			
+
 			current_user.notes.append(note)
-			current_user.save() 
-			
+			current_user.save()
+
 			noteRef = NoteRef(note_id=note.id, user_id=current_user.id)
 			noteRef.save()
-			
+
 			for item in tagList:
 				tagRef = TagRef(tags=item, note_id=[note.id,])
 				tagRef.save()
-			
+
 			flash('Quote saved successfully.','success')
 			return render_template('profile.html', form=form, search_form=SearchForm(), delete_quote=deleteQuoteForm())
 
@@ -107,7 +117,7 @@ def profile(slug):
 
 @app.route("/search" ,methods=['POST'])
 @login_required
-def search():	
+def search():
 	searchForm = SearchForm(request.form)
 	if request.method == 'POST':
 		searchForm = SearchForm(request.form)
@@ -116,7 +126,7 @@ def search():
 		if searchForm.validate() == False:
 			flash("Empty search.",'warning')
 			userNote = Note.objects.search_text(searchForm.search.data).as_pymongo()
- 
+
 
 		if searchForm.validate_on_submit():
 			#noteResult = Note.objects.search_text(content=SearchForm.search.data).first()
@@ -146,17 +156,17 @@ def delete_quote(id):
 			return redirect(url_for('profile')+('/'+current_user.slug))
 
 		if deleteNote.validate_on_submit():
-			note = Note.objects(id=id).first()			
+			note = Note.objects(id=id).first()
 
-			current_user.notes.remove(note) 
+			current_user.notes.remove(note)
 			current_user.save()
-			
+
 			note.delete()
 
 			flash('successfully deleted','warning')
 
 
-	return render_template("delete.html", title="delete", delete_note=deleteNote, note=note )	
+	return render_template("delete.html", title="delete", delete_note=deleteNote, note=note )
 
 @login_manager.user_loader
 def load_user(id):
@@ -197,12 +207,12 @@ def register():
 
 	if request.method == 'POST':
 		formS = SignUpForm(request.form)
-		
+
 		if formS.validate() == False:
 			flash('Something went wrong','danger')
 			return render_template('register.html', form=formS)
 
-		if formS.validate_on_submit():					
+		if formS.validate_on_submit():
 			hashash = formS.password.data
 			salt = uuid.uuid4().hex
 			hashed_password = hashlib.sha224(hashash + salt).hexdigest()
@@ -211,10 +221,10 @@ def register():
 				flash('Invalid email adress','danger')
 				return render_template("register.html", form=formS, title="Copylighter", regex="Invalid email adress")
 
-			newuser = User(name=formS.name.data, email=formS.email.data, password=hashed_password)				
+			newuser = User(name=formS.name.data, email=formS.email.data, password=hashed_password)
 			try:
 				newuser.save()
-				
+
 			except NotUniqueError:
 				flash('Username or email already exists','danger')
 				return render_template("register.html", form=formS, title="Copylighter")

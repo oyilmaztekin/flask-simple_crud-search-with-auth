@@ -1,11 +1,11 @@
 # -*- coding: UTF-8 -*-
 # coding:utf-8
 from flask_wtf import Form
-from wtforms.fields import StringField, PasswordField, BooleanField, SubmitField, HiddenField, TextAreaField 
+from wtforms.fields import StringField, PasswordField, BooleanField, SubmitField, HiddenField, TextAreaField, TextField
 from wtforms.validators import EqualTo
 from wtforms import validators
 from models import User, Note
-import datetime 
+import datetime
 from slugify import slugify
 
 
@@ -15,7 +15,7 @@ class LoginForm(Form):
 	remember_me = BooleanField(u'Remember me')
 	submit = SubmitField('Log in')
 	class Meta():
-		__model__ = 'User' 
+		__model__ = 'User'
 
 class SignUpForm(Form):
 	name = StringField(u'Username', [validators.Required()])
@@ -26,14 +26,15 @@ class SignUpForm(Form):
 		__model__ = 'User'
 
 class NoteForm(Form):
-	content = TextAreaField(u'Quote', [validators.Required()])	
+	content = TextAreaField(u'Quote', [validators.Required()])
+	URLLink = TextField(u'Source')
 	tags = StringField(u'Use')
 	submit = SubmitField('Add This Quote')
 	class Meta():
 		__model__ = 'Note'
 
 class SearchForm(Form):
-	search = StringField(u'Search', [validators.Required()])	
+	search = StringField(u'Search', [validators.Required()])
 	submit = SubmitField('Search')
 	class Meta():
 		__model__ = 'Note'
@@ -42,7 +43,3 @@ class deleteQuoteForm(Form):
 	submit = SubmitField('Delete Quote')
 	class Mete():
 		__model__ = 'Note'
-
-
-
-
