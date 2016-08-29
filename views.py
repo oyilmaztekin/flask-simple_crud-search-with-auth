@@ -119,6 +119,7 @@ def profile(slug):
 @login_required
 def search():
 	searchForm = SearchForm(request.form)
+
 	if request.method == 'POST':
 		searchForm = SearchForm(request.form)
 		searchedby = searchForm.search.data
@@ -127,19 +128,17 @@ def search():
 			flash("Empty search.",'warning')
 			userNote = Note.objects.search_text(searchForm.search.data).as_pymongo()
 
-
 		if searchForm.validate_on_submit():
 			#noteResult = Note.objects.search_text(content=SearchForm.search.data).first()
 			try:
 				userNote = Note.objects.search_text(searchForm.search.data).as_pymongo()
 			except OperationFailure:
-				flash("haydeee","danger")
-				render_template("search.html", title=searchedby, search_form=searchForm, result=userNote)
+				flash("sometihng went wrong","danger")
+				render_template("search.html", title=searchedby, delete_quote=deleteQuoteForm(), search_form=searchForm, result=userNote)
 			#document = notes.objects(content=searchForm.search.data).first()
 			#print userNote
 
-
-	return render_template("search.html", title=searchedby, search_form=searchForm, result=userNote)
+	return render_template("search.html", title=searchedby, search_form=searchForm, delete_quote=deleteQuoteForm(), result=userNote)
 
 
 @app.route("/delete_quote/<string:id>" ,methods=['POST'])
@@ -163,7 +162,7 @@ def delete_quote(id):
 
 			note.delete()
 
-			flash('successfully deleted','warning')
+			flash('Successfully deleted','warning')
 
 
 	return render_template("delete.html", title="delete", delete_note=deleteNote, note=note )

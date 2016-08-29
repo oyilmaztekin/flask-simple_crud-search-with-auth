@@ -43,7 +43,6 @@
 	{% for item in current_user.notes|sort(attribute='created_at',reverse=True)  %}
 
 	<div class="row animated fadeInUp" style="margin-top:20px;">
-
 		<h3><strong>{{ item.content|truncate(120) }}...</strong></h3>
 		<blockquote>
 			<span>
@@ -55,7 +54,7 @@
 
 			<!--{{ item.content|truncate(420, True) }}-->
 			{{ item.content }}
-			<footer><cite title="Source Title"><a href="{{item.URLLink}}">{{ item.URLLink }}</cite></a> <span class="pull-right">{{ item.created_at|humanize() }} </span></footer>
+			<footer><cite title="Source Title"><a href="{{item.URLLink}}" target="_blank">{{ item.URLLink }}</cite></a> <span class="pull-right">{{ item.created_at|humanize() }} </span></footer>
 			<div class="clearfix"></div>
 			<div class="btn-group" role="group" aria-label="*" style="margin-top:10px;">
 

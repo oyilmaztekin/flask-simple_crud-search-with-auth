@@ -36,6 +36,7 @@
 
 		</div>
 		{% endfor %}
+
 	{% endfor %}
 	</div><!--row sonu-->
 
@@ -51,20 +52,21 @@
 				{% endfor %}
 			</span>
 			<p></p>
+
 			{{ item.content }}
-			<footer><cite title="Source Title">{{ item.URLLink }}</cite> <span class="pull-right">{{ item.created_at }} </span></footer>
+			<footer><cite title="Source Title"><a href="{{item.URLLink}}" target="_blank">{{ item.URLLink }}</a></cite> <span class="pull-right">{{ item.created_at|humanize() }}  </span></footer>
 			<div class="clearfix"></div>
+
 			<div class="btn-group" role="group" aria-label="*" style="margin-top:10px;">
-
-
-
 				<button id="deleteQuote" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#delete_quote_modal">Delete Quote <i class="fa fa-trash"></i> </button>
 				<!--<button type="button" class="btn btn-default btn-sm"><i class="fa fa-trash"></i> Delete</button>-->
 			</div>
 
 		</blockquote>
 		</div>
-	{% include "delete_modal.html" %}
+
+
+		{% include "delete_modal_from_search.html" %}
 
 		{% else %}
 
