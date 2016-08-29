@@ -37,7 +37,7 @@ app.config["MONGODB_SETTINGS"] = {
 #}
 
 app.config["SECRET_KEY"] = '6cf34ed05e241ac72456425779220bfeaf3557ef8371bed4'
-app.config["DEBUG"] = True
+#app.config["DEBUG"] = True
 
 login_manager = LoginManager()
 login_manager.session_protection = "strong"
