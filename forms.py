@@ -28,7 +28,7 @@ class SignUpForm(Form):
 class NoteForm(Form):
 	content = TextAreaField(u'Quote', [validators.Required()])
 	URLLink = TextField(u'Source')
-	tags = StringField(u'Use')
+	tags = StringField(u'Use', [validators.Required()])
 	submit = SubmitField('Add This Quote')
 	class Meta():
 		__model__ = 'Note'

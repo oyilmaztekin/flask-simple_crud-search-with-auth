@@ -15,6 +15,8 @@ from flask.ext.login import current_user
 from collections import Counter
 from pymongo.errors import OperationFailure
 
+import logging
+
 
 
 username = ""
@@ -23,8 +25,10 @@ Email_Regex = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
 
 URl_Regex = re.compile("http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+")
 
+def check_password(self, password):
+    return check_password_hash(self.pw_hash, password)
 
-
+#index ten register yapılabiliyor.
 @app.route("/index", methods=['GET','POST'])
 @app.route("/", methods=['GET','POST'])
 def index():
@@ -42,17 +46,16 @@ def index():
 				return render_template('index.html', form=formS)
 
 			if formS.validate_on_submit():
-				hashash = formS.password.data
-				salt = uuid.uuid4().hex
-				hashed_password = hashlib.sha224(hashash + salt).hexdigest()
-
+				password = formS.password.data
 				form_email = formS.email.data
+
+
 				if not Email_Regex.match(form_email):
 					flash('Invalid email adress','danger')
 					return render_template("index.html", form=formS, title="Copylighter", regex="Invalid email adress")
 
 
-				newuser = User(name=formS.name.data, email=formS.email.data, password=hashed_password)
+				newuser = User(name=formS.name.data, email=formS.email.data, password=password)
 				try:
 					newuser.save()
 
@@ -82,37 +85,45 @@ def profile(slug):
 	form = NoteForm()
 
 	if request.method == 'POST':
-		form = NoteForm(request.form)
+		try:
+			form = NoteForm(request.form)
 
-		if form.validate() == False:
-			flash("Something went wrong.",'danger')
+			if form.validate() == False:
+				flash("Something went wrong.",'danger')
+				return render_template('profile.html', form=form, search_form=SearchForm(), delete_quote=deleteQuoteForm())
+
+			if form.validate_on_submit():
+				form_urlLink = form.URLLink.data
+				
+				if form.URLLink.data != '':
+					if not URl_Regex.match(form_urlLink):
+						flash('Invalid URL adress','danger')
+						return render_template("profile.html", form=form, search_form=SearchForm(), regex="Invalid URL adress", delete_quote=deleteQuoteForm())
+
+				tags = form.tags.data
+				tagList = tags.split(",")
+				
+				note = Note(content=form.content.data, tags=tagList, URLLink=form.URLLink.data)
+				note.save()
+
+				current_user.notes.append(note)
+				current_user.save()
+
+				noteRef = NoteRef(note_id=note.id, user_id=current_user.id)
+				noteRef.save()
+
+				for item in tagList:
+					tagRef = TagRef(tags=item, note_id=[note.id,])
+					tagRef.save()
+
+				flash('Quote saved successfully.','success')
+				return render_template('profile.html', form=form, search_form=SearchForm(), delete_quote=deleteQuoteForm())
+				
+		except ValidationError:
+			flash('UPPPS! Tags or Url was wrong','danger')
 			return render_template('profile.html', form=form, search_form=SearchForm(), delete_quote=deleteQuoteForm())
 
-		if form.validate_on_submit():
-			form_urlLink = form.URLLink.data
-			if not URl_Regex.match(form_urlLink):
-				flash('Invalid URL adress','danger')
-				return render_template("profile.html", form=form, search_form=SearchForm(), regex="Invalid URL adress",delete_quote=deleteQuoteForm())
-			tags = form.tags.data
-			tagList = tags.split(",")
-
-			note = Note(content=form.content.data, tags=tagList, URLLink=form.URLLink.data)
-			note.save()
-
-			current_user.notes.append(note)
-			current_user.save()
-
-			noteRef = NoteRef(note_id=note.id, user_id=current_user.id)
-			noteRef.save()
-
-			for item in tagList:
-				tagRef = TagRef(tags=item, note_id=[note.id,])
-				tagRef.save()
-
-			flash('Quote saved successfully.','success')
-			return render_template('profile.html', form=form, search_form=SearchForm(), delete_quote=deleteQuoteForm())
-
-	return render_template("profile.html", title=current_user.name, form=form, search_form=SearchForm(), delete_quote=deleteQuoteForm())
+	return render_template("profile.html", title=current_user.name+"'s Quotes", form=form, search_form=SearchForm(), delete_quote=deleteQuoteForm())
 
 
 @app.route("/search" ,methods=['POST'])
@@ -178,19 +189,20 @@ def load_user(id):
 @app.route("/login", methods=['GET','POST'])
 def login():
 	form = LoginForm()
+	passW = form.password.data
 	if request.method == 'POST':
 		form = LoginForm()
 		if form.validate_on_submit():
-			user = User.objects(email=form.email.data).first()
+			user = User.objects(email=form.email.data, password=passW).first()
 			if user is not None:
 				login_user(user, form.remember_me.data)
 				slug = slugify(user.name)
-				#flash('Logged in successfully as {}.'.format(user.name),'success')
-				flash('Logged in successfully','success')
+				flash('We are glad you came {}.'.format(user.name),'success')
+				#flash('Logged in successfully','success')
 				return redirect(request.args.get('next') or url_for('profile', slug=slug))
 			else:
 				flash('Wrong username or password.','danger')
-				return render_template("login.html", form=form)
+				return render_template("login.html", form=form, title="Cp-Login")
 	return render_template("login.html", form=form, title="Cp-Login")
 
 @app.route("/logout")
@@ -200,8 +212,12 @@ def logout():
 	flash('Logged out','info')
 	return redirect(url_for('index'))
 
+#bu kısım eğer kaydol sayfasına özel olarak ziyaret edilmesi gerekirse - google vs...
 @app.route("/register", methods=['GET','POST'])
 def register():
+	if current_user.is_authenticated:
+		flash("You're already registered", "info")
+		return redirect(url_for('profile')+('/'+current_user.slug))
 	formS = SignUpForm()
 
 	if request.method == 'POST':
@@ -212,16 +228,20 @@ def register():
 			return render_template('register.html', form=formS)
 
 		if formS.validate_on_submit():
-			hashash = formS.password.data
-			salt = uuid.uuid4().hex
-			hashed_password = hashlib.sha224(hashash + salt).hexdigest()
+			password = formS.password.data
+
+
 			form_email = formS.email.data
+			
 			if not Email_Regex.match(form_email):
 				flash('Invalid email adress','danger')
 				return render_template("register.html", form=formS, title="Copylighter", regex="Invalid email adress")
 
-			newuser = User(name=formS.name.data, email=formS.email.data, password=hashed_password)
+			newuser = User(name=formS.name.data, email=formS.email.data, password=password)
 			try:
+				user_mail = User.objects(email=form.email.data).first()
+				if form_email == user_mail:
+					print "asd"
 				newuser.save()
 
 			except NotUniqueError:

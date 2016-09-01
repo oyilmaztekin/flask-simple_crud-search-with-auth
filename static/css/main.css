@@ -18,3 +18,10 @@ body{
 ::-moz-selection {
   background: #ffffaa; /* Gecko Browsers */
 }
+
+.quote-box{
+	background-color: white;
+    padding: 30px;
+    box-shadow: 0px 0px 26px -5px rgba(0,0,0,0.20);
+}
+	

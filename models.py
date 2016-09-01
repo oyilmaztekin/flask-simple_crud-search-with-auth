@@ -7,13 +7,14 @@ from flask.ext.login import UserMixin
 from flask.ext.security import UserMixin
 from flask.ext.login import current_user
 from flask.ext.mongoengine import mongoengine
+from werkzeug.security import generate_password_hash, check_password_hash
 
 class Note(db.Document):
     created_at = db.DateTimeField(default=datetime.datetime.now)
-    URLLink = db.URLField(required=False)
+    URLLink = db.StringField(required=False)
     slug = db.StringField()
     content = db.StringField(required=True)
-    tags = db.ListField(db.StringField())
+    tags = db.ListField(db.StringField(required=True, max_length=20))
     isSecret = db.BooleanField(default=False)
     isArchived = db.BooleanField(default=False)
 
@@ -83,7 +84,7 @@ class NoteRef(db.Document):
 
 class TagRef(db.Document):
     created_at = db.DateTimeField(default=datetime.datetime.now)
-    tags = db.StringField(max_length=30)
+    tags = db.StringField(max_length=20)
     note_id = db.ListField(db.ReferenceField('Note', reverse_delete_rule=mongoengine.CASCADE))
 
     def __unicode__(self):
