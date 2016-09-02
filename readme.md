@@ -231,7 +231,7 @@ Tagler, virgülden itibaren ayırarak ayrı ayrı insert edilir.
 				return render_template("register.html", form=formS, title="Copylighter")
 
 
-**Password ün hashlenmesi**
+**Password ün hashlenmesi(şu an üzerinde çalışılıyor)**
 	
 
 	:::python

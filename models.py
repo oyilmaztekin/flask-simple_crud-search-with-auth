@@ -1,12 +1,13 @@
 # -*- coding: UTF-8 -*-
 # coding:utf-8
 import datetime
-from copylighter import db, app
+from copylighter import db, app, bcrypt
 from slugify import slugify
 from flask.ext.login import UserMixin
 from flask.ext.security import UserMixin
 from flask.ext.login import current_user
 from flask.ext.mongoengine import mongoengine
+from flask.ext.bcrypt import Bcrypt
 
 class Note(db.Document):
     created_at = db.DateTimeField(default=datetime.datetime.now)
@@ -49,6 +50,9 @@ class User(db.Document, UserMixin):
     
 
     def save(self, *args, **kwargs):
+        pw_hash = bcrypt.generate_password_hash(self.password)
+        bcrypt.check_password_hash(pw_hash, self.password) # returns True
+        
         defaultRole = ("active",)
         if not self.slug:
             self.slug = slugify(self.name)
@@ -74,6 +78,8 @@ class User(db.Document, UserMixin):
 
     def __repr__(self):
         return '<User %r>' % (self.name)
+
+
 
 
 class NoteRef(db.Document):
