@@ -5,7 +5,7 @@ from flask_login import login_required, login_user, logout_user
 from copylighter import db, app, login_manager
 import datetime
 from models import Note, NoteRef, User, TagRef
-from forms import LoginForm,SignUpForm, NoteForm, SearchForm, deleteQuoteForm
+from forms import LoginForm, SignUpForm, NoteForm, SearchForm, deleteQuoteForm
 from flask_login import UserMixin
 import hashlib, uuid
 from slugify import slugify
@@ -14,7 +14,6 @@ import re
 from flask.ext.login import current_user
 from collections import Counter
 from pymongo.errors import OperationFailure
-
 import logging
 
 
@@ -24,9 +23,6 @@ Email_Regex = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
 )
 
 URl_Regex = re.compile("http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+")
-
-def check_password(self, password):
-    return check_password_hash(self.pw_hash, password)
 
 #index ten register yapılabiliyor.
 @app.route("/index", methods=['GET','POST'])
@@ -48,7 +44,6 @@ def index():
 			if formS.validate_on_submit():
 				password = formS.password.data
 				form_email = formS.email.data
-
 
 				if not Email_Regex.match(form_email):
 					flash('Invalid email adress','danger')
@@ -188,8 +183,13 @@ def load_user(id):
 
 @app.route("/login", methods=['GET','POST'])
 def login():
+	if current_user.is_authenticated:
+		flash("You're already registered", "info")
+		return redirect(url_for('profile')+('/'+current_user.slug))
+
 	form = LoginForm()
 	passW = form.password.data
+
 	if request.method == 'POST':
 		form = LoginForm()
 		if form.validate_on_submit():

@@ -44,21 +44,26 @@
 
 	{% for item in current_user.notes|sort(attribute='created_at',reverse=True)  %}
 
-	<div class="row animated fadeInUp quote-box" style="margin-top:20px; margin-bottom:40px;">
+	<div class="row animated fadeInUp quote-box" style="margin-top:20px;margin-bottom:40px;">
 		<h3><strong>{{ item.content|truncate(120) }}...</strong></h3>
-		
+		<blockquote>
 			<span>
 				{% for itemT in item.tags  %}
 				<span class="label label-default"> <i class="fa fa-tag"></i>  {{ itemT }}</span>
 				{% endfor %}
 			</span>
-			
+			<p></p>
 
-			<blockquote style="margin-top:30px;">
 			<!--{{ item.content|truncate(420, True) }}-->
 			{{ item.content }}
-			<footer><cite title="Source Title"><a href="{{item.URLLink}}" target="_blank">{{ item.URLLink }}</cite></a> <span class="pull-right">{{ item.created_at|humanize() }} </span></footer>
+			<cite title="Source Title" class="quoteLink block">
+				<a href="{{item.URLLink}}" target="_blank">{{ item.URLLink }}</a>
+			</cite>
+			
+			<span class="pull-right small">{{ item.created_at|humanize() }} </span>
+
 			<div class="clearfix"></div>
+
 			<div class="btn-group pull-right" role="group" aria-label="*" style="margin-top:10px;">
 				<button id="deleteQuote" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#delete_quote_modal">Delete Quote <i class="fa fa-trash"></i> </button>
 				<!--<button type="button" class="btn btn-default btn-sm"><i class="fa fa-trash"></i> Delete</button>-->
@@ -111,7 +116,10 @@
 
 
 						{% if form.tags.errors %}
-						<span class="text-danger"><strong>This field is required</strong></span>
+						<span class="text-danger">
+							<strong>This field is required</strong>
+							<span class="small">How do you search your notes easily without tags?</span>
+						</span>
 						{% endif %}
 						{{form.tags(class="form-control input-md", placeholder="If more than one siplit with comma. example; HISTORY, SOCIOLOGY")}}
 						<small>Don't use dot(.)</small>

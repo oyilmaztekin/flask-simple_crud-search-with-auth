@@ -7,7 +7,6 @@ from flask.ext.login import UserMixin
 from flask.ext.security import UserMixin
 from flask.ext.login import current_user
 from flask.ext.mongoengine import mongoengine
-from werkzeug.security import generate_password_hash, check_password_hash
 
 class Note(db.Document):
     created_at = db.DateTimeField(default=datetime.datetime.now)
@@ -47,6 +46,7 @@ class User(db.Document, UserMixin):
     slug = db.StringField(help_text="Slug")
     roles = db.ListField(db.StringField())
     notes = db.ListField(db.EmbeddedDocumentField('Note'))
+    
 
     def save(self, *args, **kwargs):
         defaultRole = ("active",)
@@ -54,6 +54,7 @@ class User(db.Document, UserMixin):
             self.slug = slugify(self.name)
         if not self.roles:
             self.roles = defaultRole
+        
         return super(User, self).save(*args, **kwargs)
 
     def __unicode__(self):
@@ -73,6 +74,7 @@ class User(db.Document, UserMixin):
 
     def __repr__(self):
         return '<User %r>' % (self.name)
+
 
 class NoteRef(db.Document):
     created_at = db.DateTimeField(default=datetime.datetime.now)

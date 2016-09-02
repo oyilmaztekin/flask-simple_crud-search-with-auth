@@ -8,13 +8,11 @@ from flask.ext.security import Security
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_humanize import Humanize
 
-
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
 
 app = Flask(__name__)
-
 humanize = Humanize(app)
 
 
