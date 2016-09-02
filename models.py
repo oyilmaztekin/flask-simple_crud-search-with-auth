@@ -1,13 +1,13 @@
 # -*- coding: UTF-8 -*-
 # coding:utf-8
 import datetime
-from copylighter import db, app, bcrypt
+from copylighter import db, app
 from slugify import slugify
 from flask.ext.login import UserMixin
 from flask.ext.security import UserMixin
 from flask.ext.login import current_user
 from flask.ext.mongoengine import mongoengine
-from flask.ext.bcrypt import Bcrypt
+from passlib.hash import sha256_crypt
 
 class Note(db.Document):
     created_at = db.DateTimeField(default=datetime.datetime.now)
@@ -50,15 +50,11 @@ class User(db.Document, UserMixin):
     
 
     def save(self, *args, **kwargs):
-        pw_hash = bcrypt.generate_password_hash(self.password)
-        bcrypt.check_password_hash(pw_hash, self.password) # returns True
-        
         defaultRole = ("active",)
         if not self.slug:
             self.slug = slugify(self.name)
         if not self.roles:
             self.roles = defaultRole
-        
         return super(User, self).save(*args, **kwargs)
 
     def __unicode__(self):

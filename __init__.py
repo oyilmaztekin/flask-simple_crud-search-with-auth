@@ -7,7 +7,6 @@ import sys
 from flask.ext.security import Security
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_humanize import Humanize
-from flask.ext.bcrypt import Bcrypt
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -15,7 +14,6 @@ sys.setdefaultencoding("utf-8")
 
 app = Flask(__name__)
 humanize = Humanize(app)
-bcrypt = Bcrypt(app)
 
 #normal hali
 app.config["MONGODB_SETTINGS"] = {

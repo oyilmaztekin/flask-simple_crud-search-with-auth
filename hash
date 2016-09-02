@@ -1,0 +1,20 @@
+from passlib.hash import sha256_crypt
+>>> password = sha256_crypt.encrypt("password")
+p>>> password2 = sha256_crypt.encrypt("password")
+>>> print password
+$5$rounds=535000$ZMbX2e5S4UT4wYA7$o4pVS3ThAFMCFve2X0k8Ui2uFTlIZWrMAM9OEudEzL0
+>>> print password2
+$5$rounds=535000$H8G9u4VBSRpGHmFS$8bRE6OTU8dmBPPaEO91DP/Qn81H0Eo5tR0N1WrxHkI4
+>>> print password
+$5$rounds=535000$ZMbX2e5S4UT4wYA7$o4pVS3ThAFMCFve2X0k8Ui2uFTlIZWrMAM9OEudEzL0
+>>> print password2
+$5$rounds=535000$H8G9u4VBSRpGHmFS$8bRE6OTU8dmBPPaEO91DP/Qn81H0Eo5tR0N1WrxHkI4
+>>> print(password)
+$5$rounds=535000$ZMbX2e5S4UT4wYA7$o4pVS3ThAFMCFve2X0k8Ui2uFTlIZWrMAM9OEudEzL0
+>>> print(password2)
+$5$rounds=535000$H8G9u4VBSRpGHmFS$8bRE6OTU8dmBPPaEO91DP/Qn81H0Eo5tR0N1WrxHkI4
+>>> print(sha256_crypt.verify("password",password))
+True
+>>> print(sha256_crypt.verify("password",password2))
+True
+>>> 

@@ -14,6 +14,8 @@ import re
 from flask.ext.login import current_user
 from collections import Counter
 from pymongo.errors import OperationFailure
+from passlib.hash import sha256_crypt
+#import logging loglamayı bununla yapabilirsin.
 import logging
 
 
@@ -23,6 +25,8 @@ Email_Regex = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
 )
 
 URl_Regex = re.compile("http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+")
+
+password_hash = ""
 
 #index ten register yapılabiliyor.
 @app.route("/index", methods=['GET','POST'])
@@ -43,6 +47,7 @@ def index():
 
 			if formS.validate_on_submit():
 				password = formS.password.data
+				password_hash = sha256_crypt.encrypt(password)
 				form_email = formS.email.data
 
 				if not Email_Regex.match(form_email):
@@ -50,7 +55,7 @@ def index():
 					return render_template("index.html", form=formS, title="Copylighter", regex="Invalid email adress")
 
 
-				newuser = User(name=formS.name.data, email=formS.email.data, password=password)
+				newuser = User(name=formS.name.data, email=formS.email.data, password=password_hash)
 				try:
 					newuser.save()
 
@@ -60,6 +65,7 @@ def index():
 
 				flash('Successfully registered. You can login now','success')
 				return redirect(url_for('login'))
+				
 
 		return render_template("index.html", form=formS, title="Copylighter")
 
@@ -179,7 +185,7 @@ def load_user(id):
     try:
     	pass
     except DoesNotExist:
-    	print "asdasd"
+    	logging.warning("user does not exist")
 
 @app.route("/login", methods=['GET','POST'])
 def login():
@@ -192,14 +198,21 @@ def login():
 
 	if request.method == 'POST':
 		form = LoginForm()
+
+		#buraya yaz hash okumayı
+		
 		if form.validate_on_submit():
 			user = User.objects(email=form.email.data, password=passW).first()
+			
 			if user is not None:
+				
 				login_user(user, form.remember_me.data)
 				slug = slugify(user.name)
+
 				flash('We are glad you came {}.'.format(user.name),'success')
 				#flash('Logged in successfully','success')
 				return redirect(request.args.get('next') or url_for('profile', slug=slug))
+
 			else:
 				flash('Wrong username or password.','danger')
 				return render_template("login.html", form=form, title="Cp-Login")
