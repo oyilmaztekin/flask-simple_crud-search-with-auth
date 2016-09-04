@@ -4,7 +4,7 @@ from flask import Flask, render_template, redirect, url_for, request, flash, ses
 from flask_login import login_required, login_user, logout_user
 from copylighter import db, app, login_manager
 import datetime
-from models import Note, NoteRef, User, TagRef
+from models import Note, User
 from forms import LoginForm, SignUpForm, NoteForm, SearchForm, deleteQuoteForm
 from flask_login import UserMixin
 import hashlib, uuid
@@ -110,13 +110,6 @@ def profile(slug):
 
 				current_user.notes.append(note)
 				current_user.save()
-
-				noteRef = NoteRef(note_id=note.id, user_id=current_user.id)
-				noteRef.save()
-
-				for item in tagList:
-					tagRef = TagRef(tags=item, note_id=[note.id,])
-					tagRef.save()
 
 				flash('Quote saved successfully.','success')
 				return render_template('profile.html', form=form, search_form=SearchForm(), delete_quote=deleteQuoteForm())

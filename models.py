@@ -74,22 +74,3 @@ class User(db.Document, UserMixin):
 
     def __repr__(self):
         return '<User %r>' % (self.name)
-
-
-
-
-class NoteRef(db.Document):
-    created_at = db.DateTimeField(default=datetime.datetime.now)
-    note_id = db.ReferenceField('Note', reverse_delete_rule=mongoengine.CASCADE)
-    user_id = db.ReferenceField('User', reverse_delete_rule=mongoengine.PULL)
-
-    def __str__(self):
-        return self.note_id
-
-class TagRef(db.Document):
-    created_at = db.DateTimeField(default=datetime.datetime.now)
-    tags = db.StringField(max_length=20)
-    note_id = db.ListField(db.ReferenceField('Note', reverse_delete_rule=mongoengine.CASCADE))
-
-    def __unicode__(self):
-        return self.tags
