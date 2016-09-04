@@ -41,6 +41,8 @@ def index():
 
 		if request.method == 'POST':
 			formS = SignUpForm(request.form)
+			user_name = User.objects(name=formS.name.data)
+			user_email = User.objects(email=formS.email.data)
 
 			if formS.validate() == False:
 				flash('Something went wrong','danger')
@@ -55,17 +57,35 @@ def index():
 					flash('Invalid email adress','danger')
 					return render_template("index.html", form=formS, title="Copylighter", regex="Invalid email adress")
 
+				else:
+					pass
 
 				newuser = User(name=formS.name.data, email=formS.email.data, password=password_hash)
+
 				try:
 					newuser.save()
 
 				except NotUniqueError:
-					flash('Username or email already exists','danger')
-					return render_template("index.html", form=formS, title="Copylighter")
+					if user_name and user_email:
+						flash('Username or Email is already taken','danger')
+						return render_template("index.html", form=formS, title="Copylighter", regex="Already taken")
+
+					elif user_email:
+						flash('Username or Email is already taken','danger')
+						return render_template("index.html", form=formS, title="Copylighter", regex_email="Already taken")
+
+					elif user_name:
+						flash('Username or Email already taken','danger')
+						return render_template("index.html", form=formS, title="Copylighter", regex_name="Already taken")
+					
+					else:
+						pass
 
 				flash('Successfully registered. You can login now','success')
 				return redirect(url_for('login'))
+
+		else:
+			return render_template("index.html", form=formS, title="Copylighter")
 				
 
 		return render_template("index.html", form=formS, title="Copylighter")
@@ -239,6 +259,9 @@ def register():
 		return redirect(url_for('profile')+('/'+current_user.slug))
 	formS = SignUpForm()
 
+	user_name = User.objects(name=formS.name.data)
+	user_email = User.objects(email=formS.email.data)
+
 	if request.method == 'POST':
 		formS = SignUpForm()
 
@@ -257,15 +280,26 @@ def register():
 				return render_template("register.html", form=formS, title="Copylighter", regex="Invalid email adress")
 
 			newuser = User(name=formS.name.data, email=formS.email.data, password=password_hash)
+			
 			try:
-				user_mail = User.objects(email=formS.email.data).first()
-				if form_email == user_mail:
-					print "asd"
 				newuser.save()
 
 			except NotUniqueError:
-				flash('Username or email already exists','danger')
-				return render_template("register.html", form=formS, title="Copylighter")
+				if user_name and user_email:
+					flash('Username or Email is already taken','danger')
+					return render_template("register.html", form=formS, title="Register to Copylighter", regex="Already taken")
+
+				elif user_email:
+					flash('Username or Email is already taken','danger')
+					return render_template("register.html", form=formS, title="Register to Copylighter", regex_email="Already taken")
+
+				elif user_name:
+					flash('Username or Email already taken','danger')
+					return render_template("register.html", form=formS, title="Register to Copylighter", regex_name="Already taken")
+				
+				else:
+					pass
+
 			flash('You have successfully registered. You can login now','success')
 			return redirect(url_for('login'))
 

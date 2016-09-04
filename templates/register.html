@@ -8,27 +8,33 @@
 		{{form.hidden_tag()}}
 
 		<div class="form-group animated fadeInUp">	
-		{{form.name.label}}
-		{% if form.name.errors %} 
-		<span class="text-danger"><strong>This field is required</strong></span>
-		{% endif %} 
-		{{form.name(class="form-control")}}
+			{{form.name.label}}
+			<span class="text-danger"><strong>{{regex_name}}</strong></span>
+			<span class="text-danger"><strong>{{regex}}</strong></span>
+
+			{% if form.name.errors %} 
+			<span class="text-danger"><strong>This field is required</strong></span>
+			{% endif %} 
+			{{form.name(class="form-control")}}
 		</div>
 
 		<div class="form-group animated fadeInUp">	
-		{{form.email.label}} <span class="text-danger"><strong> {{ regex }}</strong></span>
-		{% if form.email.errors %} 
-		<span class="text-danger"><strong>This field is required</strong></span>
-		{% endif %} 
-		{{form.email(class="form-control")}}
+			{{form.email.label}} 
+			<span class="text-danger"><strong>{{ regex }}</strong></span>
+			<span class="text-danger"><strong>{{regex_email}}</strong></span>
+			
+			{% if form.email.errors %} 
+			<span class="text-danger"><strong>This field is required</strong></span>
+			{% endif %} 
+			{{form.email(class="form-control")}}
 		</div>
 
 		<div class="form-group animated fadeInUp">	
-		{{form.password.label}}
-		{% if form.password.errors %} 
-		<span class="text-danger"><strong>This field is required</strong></span>
-		{% endif %} 
-		{{form.password(class="form-control")}}
+			{{form.password.label}}
+			{% if form.password.errors %} 
+			<span class="text-danger"><strong>This field is required</strong></span>
+			{% endif %} 
+			{{form.password(class="form-control")}}
 		</div>
 				
 		{{ form.submit(class="btn btn-info btn-block btn-lg animated fadeInUp") }}
