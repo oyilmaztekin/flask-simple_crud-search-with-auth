@@ -17,6 +17,7 @@ from pymongo.errors import OperationFailure
 from passlib.hash import sha256_crypt
 #import logging loglamayı bununla yapabilirsin.
 import logging
+#from flask.ext.mongoengine import mongoengine
 
 
 
@@ -189,33 +190,45 @@ def load_user(id):
 
 @app.route("/login", methods=['GET','POST'])
 def login():
+
 	if current_user.is_authenticated:
 		flash("You're already registered", "info")
 		return redirect(url_for('profile')+('/'+current_user.slug))
 
 	form = LoginForm()
-	passW = form.password.data
+	
 
 	if request.method == 'POST':
 		form = LoginForm()
+		passW = form.password.data
 
-		#buraya yaz hash okumayı
-		
 		if form.validate_on_submit():
-			user = User.objects(email=form.email.data, password=passW).first()
-			
-			if user is not None:
-				
-				login_user(user, form.remember_me.data)
-				slug = slugify(user.name)
+			user = User.objects(email=form.email.data).first()
 
-				flash('We are glad you came {}.'.format(user.name),'success')
-				#flash('Logged in successfully','success')
-				return redirect(request.args.get('next') or url_for('profile', slug=slug))
+			if not Email_Regex.match(form.email.data):
+				flash('Invalid email adress','danger')
+				return render_template("login.html", form=form, title="Copylighter", regex="Invalid email adress")
+
+
+			if user is not None: 
+				if sha256_crypt.verify(passW, user.password):
+					#login_user(user, form.remember_me.data)
+					login_user(user)
+					slug = slugify(user.name)
+
+					flash('We are glad you came {}.'.format(user.name),'success')
+					return redirect(request.args.get('next') or url_for('profile', slug=slug))
+				
+				else:
+					flash('Password does not match with the email','danger')
+					return render_template("login.html", form=form, title="Cp-Login", regexpassword="Wrong Password")	
 
 			else:
-				flash('Wrong username or password.','danger')
-				return render_template("login.html", form=form, title="Cp-Login")
+				flash('There is no email such as.  '+form.email.data,'danger')
+				return render_template("login.html", form=form, title="Cp-Login", regex="Email does not found")
+		else:
+			flash("Informations doesn't entered requirely","danger")
+			return render_template("login.html", form=form, title="cp-login")
 	return render_template("login.html", form=form, title="Cp-Login")
 
 @app.route("/logout")
@@ -234,7 +247,7 @@ def register():
 	formS = SignUpForm()
 
 	if request.method == 'POST':
-		formS = SignUpForm(request.form)
+		formS = SignUpForm()
 
 		if formS.validate() == False:
 			flash('Something went wrong','danger')
@@ -242,7 +255,7 @@ def register():
 
 		if formS.validate_on_submit():
 			password = formS.password.data
-
+			password_hash = sha256_crypt.encrypt(password)
 
 			form_email = formS.email.data
 			
@@ -250,9 +263,9 @@ def register():
 				flash('Invalid email adress','danger')
 				return render_template("register.html", form=formS, title="Copylighter", regex="Invalid email adress")
 
-			newuser = User(name=formS.name.data, email=formS.email.data, password=password)
+			newuser = User(name=formS.name.data, email=formS.email.data, password=password_hash)
 			try:
-				user_mail = User.objects(email=form.email.data).first()
+				user_mail = User.objects(email=formS.email.data).first()
 				if form_email == user_mail:
 					print "asd"
 				newuser.save()

@@ -47,7 +47,10 @@ class User(db.Document, UserMixin):
     slug = db.StringField(help_text="Slug")
     roles = db.ListField(db.StringField())
     notes = db.ListField(db.EmbeddedDocumentField('Note'))
+
     
+    def __unicode__(self):
+        return '%s - %s' % (self.name, self.password) or u''
 
     def save(self, *args, **kwargs):
         defaultRole = ("active",)
@@ -56,9 +59,6 @@ class User(db.Document, UserMixin):
         if not self.roles:
             self.roles = defaultRole
         return super(User, self).save(*args, **kwargs)
-
-    def __unicode__(self):
-        return self.name
 
     def is_authenticated(self):
         return True

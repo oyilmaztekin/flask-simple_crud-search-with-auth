@@ -34,13 +34,15 @@ app.config["MONGODB_SETTINGS"] = {
 #}
 
 app.config["SECRET_KEY"] = '6cf34ed05e241ac72456425779220bfeaf3557ef8371bed4'
+
 #app.config["DEBUG"] = True
+#app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+app.config['SESSION_COOKIE_SECURE'] = True
 
 login_manager = LoginManager()
 login_manager.session_protection = "strong"
 login_manager.init_app(app)
 
-SECURITY_RECOVERABLE = True
 db = MongoEngine(app)
 app.config['SECURITY_RECOVERABLE'] = True
 app.session_interface = MongoEngineSessionInterface(db)

@@ -6,7 +6,7 @@
 	<form action="" method="post">			
 		{{form.hidden_tag()}}
 		<div class="form-group animated fadeInUp">	
-		{{form.email.label}}
+		{{form.email.label}} <span class="text-danger"><strong>{{ regex }}</strong></span>
 		{% if form.email.errors %} 
 		<span class="text-danger"><strong>This field is required</strong></span>
 		{% endif %} 
@@ -14,7 +14,7 @@
 		</div>
 
 		<div class="form-group animated fadeInUp">	
-		{{form.password.label}}
+		{{form.password.label}}  <span class="text-danger"><strong>{{ regexpassword }}</strong></span>
 		{% if form.password.errors %} 
 		<span class="text-danger"><strong>This field is required</strong></span>
 		{% endif %} 
