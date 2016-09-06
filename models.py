@@ -32,6 +32,7 @@ class Note(db.Document):
         return self.content
 
 
+
     def save(self, *args, **kwargs):
         #if not self.slug:
             #self.slug = slugify(self.title)

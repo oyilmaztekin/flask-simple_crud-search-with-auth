@@ -16,23 +16,18 @@
 				</span>
 			</div><!-- /input-group -->
 		</form>
-
+		
+		<ul class="center-block quoteTags">
 		{% for tagContainer in current_user.notes  %}
-		{% for tagInner in tagContainer.tags %}
-
-		<div class="center-block" style="margin-top:5px; display: inline-block;">
-			<span class="label label-default label-lg">
-				{% filter title %}
-				{{ tagInner }}
-				{% endfilter %}
-
-				<!--<span class="label label-default">{{ tagContainer.tags|length }}</span>-->
-			</span>
-
-
-		</div>
+			{% for tagInner in tagContainer.tags %}
+				<li class="label label-default quotetagsli">
+						 {{ tagInner }}
+					<!--<span class="label label-default">{{ tagContainer.tags|length }}</span>-->
+				</li>
+			{% endfor %}
 		{% endfor %}
-		{% endfor %}
+			
+		</ul>
 	</div><!--row sonu-->
 
 	<div class="clearfix"></div>
@@ -42,15 +37,22 @@
 		{#- if current_user.notes < 1 %}<h3>You haven't any Quote yet. You can add one</h3> <button id="addQuote" class="btn btn-success navbar-btn pull-left" data-toggle="modal" data-target="#add_quote">Add Quote <i class="fa fa-plus"></i> </button>	{%- endif -%#}
 	</div>
 
+
 	{% for item in current_user.notes|sort(attribute='created_at',reverse=True)  %}
 
 	<div class="row animated fadeInUp quote-box" style="margin-top:20px;margin-bottom:40px;">
-		<h3><strong>{{ item.content|truncate(120) }}...</strong></h3>
+		<!--<h3><strong>{{ item.content|truncate(120) }}...</strong></h3>-->
 		<blockquote>
 			<span>
 				{% for itemT in item.tags  %}
 				<span class="label label-default"> <i class="fa fa-tag"></i>  {{ itemT }}</span>
+
 				{% endfor %}
+				
+				<button class="btn btn-link" id="addTags" data-target="#add_tags" data-toggle="modal"  style="margin-left:0px;font-size: 12px;">
+					Add Tags 
+					<i class="fa fa-plus"></i>
+				</button>
 			</span>
 			<p></p>
 
@@ -158,6 +160,69 @@
 
 
 
+<!--ADD QUOTE-->
+<div class="modal fade" id="add_tags" tabindex="-1" role="dialog" aria-labelledby="adding">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="adding">ADD MORE TAGS</h4>
+			</div>
+			<div class="modal-body">
+				<!--form goes here-->
+				<form action="" method="post">
+
+					{{form.hidden_tag()}}
+
+					<div class="form-group">
+						{{ form.tags.label }}
+						<abbr title="If you add with tags you can easly find when you search ( example:scholl note)" class="initialism"> <strong>TAGS</strong></abbr>
+						<div class="clearfix"></div>
+
+
+						{% if form.tags.errors %}
+						<span class="text-danger">
+							<strong>This field is required</strong>
+							<span class="small">How do you search your notes easily without tags?</span>
+						</span>
+						{% endif %}
+						{{form.tags(class="form-control input-md", placeholder="If more than one siplit with comma. example; HISTORY, SOCIOLOGY")}}
+						<small>Don't use dot(.)</small>
+					</div>
+					
+
+
+					<div class="clearfix"></div>
+					<div class="" style="margin-top:15px;">
+						{{ form.submit(class="btn btn-success btn-lg btn-block") }}
+					</div>
+				</form>
+				<div class="clearfix"></div>
+
+				<!--form goes here-->
+			</div>
+
+		</div><!--modal content-->
+	</div><!--modal dialog-->
+</div><!--modal-->
+<!--EDIT TAGS-->
+
+
 
 
 {% endblock content %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+	var seen = {};
+	$('li.quotetagsli').each(function() {
+	    var txt = $(this).text();
+	    if (seen[txt])
+	        $(this).remove();
+	    else
+	        seen[txt] = true;
+	});
+</script>
+
+{% endblock %}
