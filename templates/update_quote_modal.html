@@ -1,0 +1,70 @@
+<!--EDIT TAGS-->
+<div class="modal fade" id="add_tags" tabindex="-1" role="dialog" aria-labelledby="adding">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="adding">ADD MORE TAGS</h4>
+			</div>
+			<div class="modal-body">
+				<!--form goes here-->
+				
+				<form action="{{ url_for('update_quote', id=item.id) }}" method="post">
+					
+					{{formUpdate.hidden_tag()}}
+
+					<div class="form-group">
+						{{ formUpdate.content2.label }}
+						<div class="clearfix"></div>
+
+
+						{% if formUpdate.content2.errors %}
+						<span class="text-danger">
+							<strong>This field is required</strong>
+						</span>
+						{% endif %}
+						{{formUpdate.content2(class="form-control input-md update-tags update-content")}}
+						<small>Don't use dot(.)</small>
+					</div>
+
+					<div class="form-group">
+						{{ formUpdate.tags2.label }}
+						<abbr title="If you add with tags you can easly find when you search ( example:meaning of life, relaxation)" class="initialism"> <strong>TAGS</strong></abbr>
+						<div class="clearfix"></div>
+
+
+						{% if formUpdate.tags2.errors %}
+						<span class="text-danger">
+							<strong>This field is required</strong>
+							<span class="small">How do you search your notes easily without tags?</span>
+						</span>
+						{% endif %}
+						{{formUpdate.tags2(class="form-control input-md update-tags", placeholder="Meaning of life, Relaxations... If more than one siplit with comma.")}}
+						<small>Don't use dot(.)</small>
+					</div>
+
+
+					<div class="form-group">
+						{{ formUpdate.URLLink2.label }}
+						<div class="clearfix"></div>
+
+						
+						{{formUpdate.URLLink2(class="form-control input-md update-url", placeholder="like www.copylighter.com")}}
+					</div>
+
+
+
+					<div class="clearfix"></div>
+					<div class="" style="margin-top:15px;">
+						{{ formUpdate.submit2(class="btn btn-success btn-lg btn-block update-submit") }}
+					</div>
+				</form>
+				<div class="clearfix"></div>
+
+				<!--form goes here-->
+			</div>
+
+		</div><!--modal content-->
+	</div><!--modal dialog-->
+</div><!--modal-->
+<!--EDIT TAGS-->

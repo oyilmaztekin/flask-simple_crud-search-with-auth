@@ -8,15 +8,15 @@ from flask.ext.security import UserMixin
 from flask.ext.login import current_user
 from flask.ext.mongoengine import mongoengine
 from passlib.hash import sha256_crypt
+from flask.ext.login import current_user
+import uuid
 
-class Note(db.Document):
+class Note(db.EmbeddedDocument):
+    id = db.UUIDField(primary_key=True, default=uuid.uuid4)
     created_at = db.DateTimeField(default=datetime.datetime.now)
     URLLink = db.StringField(required=False)
-    slug = db.StringField()
     content = db.StringField(required=True)
     tags = db.ListField(db.StringField(required=True, max_length=20))
-    isSecret = db.BooleanField(default=False)
-    isArchived = db.BooleanField(default=False)
 
     meta = {'indexes': [
         {'fields': ["$content","$tags"],
@@ -28,8 +28,11 @@ class Note(db.Document):
         }
     ]}
 
+    
+
+    
     def __unicode__(self):
-        return self.content
+        return '%s - %s - %s - %s - %s' % (self.id, self.tags, self.content, self.URLLink, self.URLLink)
 
 
 
@@ -40,6 +43,11 @@ class Note(db.Document):
             #self.user = current_user.id
         return super(Note, self).save(*args, **kwargs)
 
+    def update(self, *args, **kwargs):
+        #return '%s - %s' % (self.ad_soyad, self.basvuru_konusu)
+        return super(Note, self).save(*args, **kwargs)
+        
+
 class User(db.Document, UserMixin):
     created_at = db.DateTimeField(default=datetime.datetime.now)
     name = db.StringField(max_length=30, required=True, unique=True, help_text="Username or Name-Lastname")
@@ -47,11 +55,12 @@ class User(db.Document, UserMixin):
     password = db.StringField(max_length=255, required=True, help_text="Password")
     slug = db.StringField(help_text="Slug")
     roles = db.ListField(db.StringField())
-    notes = db.ListField(db.EmbeddedDocumentField('Note'))
+    notes = db.EmbeddedDocumentListField('Note')
 
     
+
     def __unicode__(self):
-        return '%s - %s' % (self.name, self.password) or u''
+        return '%s' % (self.name, self.password) or u''
 
     def save(self, *args, **kwargs):
         defaultRole = ("active",)
@@ -73,5 +82,14 @@ class User(db.Document, UserMixin):
     def get_id(self):
         return unicode(str(self.id))
 
+    def update(self, *args, **kwargs):
+        #if not self.slug:
+            #self.slug = slugify(self.title)
+        #if not self.user:
+            #self.user = current_user.id
+        return super(User, self).update(*args, **kwargs)
+
     def __repr__(self):
         return '<User %r>' % (self.name)
+
+

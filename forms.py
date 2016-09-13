@@ -33,6 +33,15 @@ class NoteForm(Form):
 	class Meta():
 		__model__ = 'Note'
 
+class UpdateNoteForm(Form):
+	content2 = TextAreaField(u'Quote', [validators.Required()])
+	URLLink2 = TextField(u'Source')
+	tags2 = StringField(u'Use', [validators.Required()])
+	wtf = HiddenField()
+	submit2 = SubmitField('Update This Quote')
+	class Meta():
+		__model__ = 'Note'
+
 class SearchForm(Form):
 	search = StringField(u'Search', [validators.Required()])
 	submit = SubmitField('Search')

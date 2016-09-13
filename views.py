@@ -5,7 +5,7 @@ from flask_login import login_required, login_user, logout_user
 from copylighter import db, app, login_manager
 import datetime
 from models import Note, User
-from forms import LoginForm, SignUpForm, NoteForm, SearchForm, deleteQuoteForm
+from forms import LoginForm, SignUpForm, NoteForm, SearchForm, deleteQuoteForm, UpdateNoteForm
 from flask_login import UserMixin
 import hashlib, uuid
 from slugify import slugify
@@ -105,40 +105,47 @@ def server_error(e):
 def profile(slug):
 	#variables
 	form = NoteForm()
+	formUpdate = UpdateNoteForm()
 
 	if request.method == 'POST':
 		try:
 			form = NoteForm(request.form)
+			formUpdate = UpdateNoteForm(request.form)
 
-			if form.validate() == False:
+			if form.validate() and form.submit == False:
 				flash("Something went wrong.",'danger')
-				return render_template('profile.html', form=form, search_form=SearchForm(), delete_quote=deleteQuoteForm())
-
-			if form.validate_on_submit():
+				return render_template('profile.html', form=form, formUpdate=UpdateNoteForm(), search_form=SearchForm(), delete_quote=deleteQuoteForm(), )
+	
+			
+			if form.validate_on_submit() and form.submit.data:
 				form_urlLink = form.URLLink.data
 				
 				if form.URLLink.data != '':
 					if not URl_Regex.match(form_urlLink):
 						flash('Invalid URL adress','danger')
-						return render_template("profile.html", form=form, search_form=SearchForm(), regex="Invalid URL adress", delete_quote=deleteQuoteForm())
+						return render_template("profile.html", form=form, formUpdate=UpdateNoteForm(), search_form=SearchForm(), regex="Invalid URL adress", delete_quote=deleteQuoteForm())
+					else:
+						pass
 
 				tags = form.tags.data
 				tagList = tags.split(",")
 				
+
 				note = Note(content=form.content.data, tags=tagList, URLLink=form.URLLink.data)
-				note.save()
 
 				current_user.notes.append(note)
 				current_user.save()
 
+
+
 				flash('Quote saved successfully.','success')
-				return render_template('profile.html', form=form, search_form=SearchForm(), delete_quote=deleteQuoteForm())
-				
+				return render_template('profile.html', form=form, formUpdate=UpdateNoteForm(), search_form=SearchForm(), delete_quote=deleteQuoteForm())
+			
 		except ValidationError:
 			flash('UPPPS! Tags or Url was wrong','danger')
-			return render_template('profile.html', form=form, search_form=SearchForm(), delete_quote=deleteQuoteForm())
+			return render_template('profile.html', form=form, formUpdate=UpdateNoteForm(), search_form=SearchForm(), delete_quote=deleteQuoteForm())
 
-	return render_template("profile.html", title=current_user.name+"'s Quotes", form=form, search_form=SearchForm(), delete_quote=deleteQuoteForm())
+	return render_template("profile.html", title=current_user.name+"'s Quotes", form=form, formUpdate=UpdateNoteForm(), search_form=SearchForm(), delete_quote=deleteQuoteForm())
 
 
 @app.route("/search" ,methods=['POST'])
@@ -170,7 +177,8 @@ def search():
 @app.route("/delete_quote/<string:id>" ,methods=['POST'])
 @login_required
 def delete_quote(id):
-	note = Note.objects(id=id).first()
+	#note = User.objects(notes__id=id).first()
+	note = current_user.notes.get(id=id)
 
 	deleteNote = deleteQuoteForm()
 	if request.method == 'POST':
@@ -181,17 +189,49 @@ def delete_quote(id):
 			return redirect(url_for('profile')+('/'+current_user.slug))
 
 		if deleteNote.validate_on_submit():
-			note = Note.objects(id=id).first()
+			note = current_user.notes.get(id=id)
 
 			current_user.notes.remove(note)
 			current_user.save()
-
-			note.delete()
 
 			flash('Successfully deleted','warning')
 
 
 	return render_template("delete.html", title="delete", delete_note=deleteNote, note=note )
+
+
+
+@app.route("/update_quote/<string:id>" ,methods=['POST'])
+@login_required
+def update_quote(id):
+	
+	form = UpdateNoteForm()
+	if request.method == 'POST':
+
+
+		if form.validate == False:
+			flash('Faliure','danger')
+			return redirect(url_for('profile')+('/'+current_user.slug))
+
+		if form.validate_on_submit():
+			note = current_user.notes.get(id=form.wtf.data)
+			print note
+			form = UpdateNoteForm(request.form)
+
+			tags = form.tags2.data
+			tagList = tags.split(",")
+
+			#http://docs.mongoengine.org/tutorial.html kısmına bakarak değiştirildi. Dökümantasyonları ciddiye al.
+			note.content = form.content2.data
+			note.tags = tagList
+			note.URLLink = form.URLLink2.data
+			
+			note.save()
+			current_user.save()
+			flash('Successfully updated','success')
+
+	return render_template("update.html", title="Update Note", form=form, note=note )
+
 
 @login_manager.user_loader
 def load_user(id):

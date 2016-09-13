@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<span id="homepage-flag" style="display: none"></span>
+<div class="col-md-8 col-lg-8 col-md-offset-2 col-lg-offset-2">	
+	<div class="row animated fadeIn">
+
+		<ol class="breadcrumb">
+			<li class="h3"><a href="{{url_for('profile')}}/{{ current_user.slug }}"><i class="fa fa-arrow-left"></i> All Quotes</a></li>
+			
+		</ol>
+		
+		<h3><span class="text-info">This Quote Updated</span></h3>
+		<blockquote>
+			<span class="label label-default"> <i class="fa fa-tag"></i>  {{ note.tags }}</span>	
+				
+			<p></p>
+			
+			{{ note.content }}
+
+			<cite title="Source Title" class="quoteLink block">
+				<a href="{{note.URLLink}}" target="_blank">{{ note.URLLink }}</a>
+			</cite>
+			
+			
+
+			<div class="clearfix"></div>
+
+		</blockquote>
+	</div>
+</div>
+
+{% endblock %}
