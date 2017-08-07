@@ -1,8 +1,5 @@
 # Copylighter
 
-## DATABASE MODEL
-
-
 ### kurulum
 
 virtual environment kurulum
@@ -18,7 +15,7 @@ pip paketlerinin kurulumu
 ```pip install -r requirements.txt```
 
 
-## Kodlar
+## DATABASE MODEL
 
 ### Quote - models.py
 ```python
