@@ -5,7 +5,7 @@ from flask_login import login_required, login_user, logout_user
 from copylighter import db, app, login_manager
 import datetime
 from models import Note, User
-from forms import LoginForm, SignUpForm, NoteForm, SearchForm, deleteQuoteForm, UpdateNoteForm
+from forms import LoginForm, SignUpForm, NoteForm, SearchForm, deleteQuoteForm
 from flask_login import UserMixin
 import hashlib, uuid
 from slugify import slugify
@@ -37,7 +37,7 @@ def index():
 		return redirect(url_for('profile')+('/'+current_user.slug))
 	else:
 
-		formS = SignUpForm()
+		formS = SignUpForm(request.form)
 
 		if request.method == 'POST':
 			formS = SignUpForm(request.form)
@@ -104,48 +104,49 @@ def server_error(e):
 @login_required
 def profile(slug):
 	#variables
-	form = NoteForm()
-	formUpdate = UpdateNoteForm()
+	form = NoteForm(request.form)
+
+	notes = Note.objects.all()
+
+	for note in current_user.notes:
+		for t in note.tags:
+			tagJ = ""
+			join = tagJ.join(note.tags)
+			print join
 
 	if request.method == 'POST':
 		try:
 			form = NoteForm(request.form)
-			formUpdate = UpdateNoteForm(request.form)
 
-			if form.validate() and form.submit == False:
+			if form.validate() == False:
 				flash("Something went wrong.",'danger')
-				return render_template('profile.html', form=form, formUpdate=UpdateNoteForm(), search_form=SearchForm(), delete_quote=deleteQuoteForm(), )
-	
-			
-			if form.validate_on_submit() and form.submit.data:
+				return render_template('profile.html', form=form, search_form=SearchForm(request.form), delete_quote=deleteQuoteForm(request.form))
+
+			if form.validate_on_submit():
 				form_urlLink = form.URLLink.data
 				
 				if form.URLLink.data != '':
 					if not URl_Regex.match(form_urlLink):
 						flash('Invalid URL adress','danger')
-						return render_template("profile.html", form=form, formUpdate=UpdateNoteForm(), search_form=SearchForm(), regex="Invalid URL adress", delete_quote=deleteQuoteForm())
-					else:
-						pass
+						return render_template("profile.html", form=form, search_form=SearchForm(request.form), regex="Invalid URL adress", delete_quote=deleteQuoteForm(request.form))
 
 				tags = form.tags.data
 				tagList = tags.split(",")
 				
-
 				note = Note(content=form.content.data, tags=tagList, URLLink=form.URLLink.data)
+				note.save()
 
 				current_user.notes.append(note)
 				current_user.save()
 
-
-
 				flash('Quote saved successfully.','success')
-				return render_template('profile.html', form=form, formUpdate=UpdateNoteForm(), search_form=SearchForm(), delete_quote=deleteQuoteForm())
-			
+				return render_template('profile.html', form=form, search_form=SearchForm(request.form), delete_quote=deleteQuoteForm(request.form))
+				
 		except ValidationError:
 			flash('UPPPS! Tags or Url was wrong','danger')
-			return render_template('profile.html', form=form, formUpdate=UpdateNoteForm(), search_form=SearchForm(), delete_quote=deleteQuoteForm())
+			return render_template('profile.html', form=form, search_form=SearchForm(request.form), delete_quote=deleteQuoteForm(request.form))
 
-	return render_template("profile.html", title=current_user.name+"'s Quotes", form=form, formUpdate=UpdateNoteForm(), search_form=SearchForm(), delete_quote=deleteQuoteForm())
+	return render_template("profile.html", title=current_user.name+"'s Quotes", form=form, search_form=SearchForm(request.form), delete_quote=deleteQuoteForm(request.form))
 
 
 @app.route("/search" ,methods=['POST'])
@@ -167,20 +168,19 @@ def search():
 				userNote = Note.objects.search_text(searchForm.search.data).as_pymongo()
 			except OperationFailure:
 				flash("sometihng went wrong","danger")
-				render_template("search.html", title=searchedby, delete_quote=deleteQuoteForm(), search_form=searchForm, result=userNote)
+				render_template("search.html", title=searchedby, delete_quote=deleteQuoteForm(request.form), search_form=searchForm, result=userNote)
 			#document = notes.objects(content=searchForm.search.data).first()
 			#print userNote
 
-	return render_template("search.html", title=searchedby, search_form=searchForm, delete_quote=deleteQuoteForm(), result=userNote)
+	return render_template("search.html", title=searchedby, search_form=searchForm, delete_quote=deleteQuoteForm(request.form), result=userNote)
 
 
 @app.route("/delete_quote/<string:id>" ,methods=['POST'])
 @login_required
 def delete_quote(id):
-	#note = User.objects(notes__id=id).first()
-	note = current_user.notes.get(id=id)
+	note = Note.objects(id=id).first()
 
-	deleteNote = deleteQuoteForm()
+	deleteNote = deleteQuoteForm(request.form)
 	if request.method == 'POST':
 		deleteNote =deleteQuoteForm(request.form)
 
@@ -189,49 +189,17 @@ def delete_quote(id):
 			return redirect(url_for('profile')+('/'+current_user.slug))
 
 		if deleteNote.validate_on_submit():
-			note = current_user.notes.get(id=id)
+			note = Note.objects(id=id).first()
 
 			current_user.notes.remove(note)
 			current_user.save()
+
+			note.delete()
 
 			flash('Successfully deleted','warning')
 
 
 	return render_template("delete.html", title="delete", delete_note=deleteNote, note=note )
-
-
-
-@app.route("/update_quote/<string:id>" ,methods=['POST'])
-@login_required
-def update_quote(id):
-	
-	form = UpdateNoteForm()
-	if request.method == 'POST':
-
-
-		if form.validate == False:
-			flash('Faliure','danger')
-			return redirect(url_for('profile')+('/'+current_user.slug))
-
-		if form.validate_on_submit():
-			note = current_user.notes.get(id=form.wtf.data)
-			print note
-			form = UpdateNoteForm(request.form)
-
-			tags = form.tags2.data
-			tagList = tags.split(",")
-
-			#http://docs.mongoengine.org/tutorial.html kısmına bakarak değiştirildi. Dökümantasyonları ciddiye al.
-			note.content = form.content2.data
-			note.tags = tagList
-			note.URLLink = form.URLLink2.data
-			
-			note.save()
-			current_user.save()
-			flash('Successfully updated','success')
-
-	return render_template("update.html", title="Update Note", form=form, note=note )
-
 
 @login_manager.user_loader
 def load_user(id):
@@ -248,11 +216,11 @@ def login():
 		flash("You're already registered", "info")
 		return redirect(url_for('profile')+('/'+current_user.slug))
 
-	form = LoginForm()
+	form = LoginForm(request.form)
 	
 
 	if request.method == 'POST':
-		form = LoginForm()
+		form = LoginForm(request.form)
 		passW = form.password.data
 
 		if form.validate_on_submit():
@@ -297,13 +265,13 @@ def register():
 	if current_user.is_authenticated:
 		flash("You're already registered", "info")
 		return redirect(url_for('profile')+('/'+current_user.slug))
-	formS = SignUpForm()
+	formS = SignUpForm(request.form)
 
 	user_name = User.objects(name=formS.name.data)
 	user_email = User.objects(email=formS.email.data)
 
 	if request.method == 'POST':
-		formS = SignUpForm()
+		formS = SignUpForm(request.form)
 
 		if formS.validate() == False:
 			flash('Something went wrong','danger')

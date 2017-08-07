@@ -55,5 +55,6 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
+note-yedek.py
+mongo_example_query.txt
 
-static/* linguist-vendored

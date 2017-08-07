@@ -17,7 +17,7 @@ class Note(db.EmbeddedDocument):
     URLLink = db.StringField(required=False)
     content = db.StringField(required=True)
     tags = db.ListField(db.StringField(required=True, max_length=20))
-
+    
     meta = {'indexes': [
         {'fields': ["$content","$tags"],
          'ordering': ['-created_at'],

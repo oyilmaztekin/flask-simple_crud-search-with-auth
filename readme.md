@@ -1,10 +1,27 @@
-#Copylighter#
+# Copylighter
 
-##DATABASE MODEL##
+## DATABASE MODEL
 
-###Quote - models.py###
 
- 	:::python
+### kurulum
+
+virtual environment kurulum
+
+```virtualenv env```
+
+virtual environment aktif etme
+
+```source env/bin/activate```
+
+pip paketlerinin kurulumu
+
+```pip install -r requirements.txt```
+
+
+## Kodlar
+
+### Quote - models.py
+```python
 	    class Note(db.Document):
 		    created_at = db.DateTimeField(default=datetime.datetime.now)
 		    URLLink = db.URLField(required=False)
@@ -14,12 +31,14 @@
 		    isArchived = db.BooleanField(default=False)
 		    isSecret = db.BooleanField(default=False)
 
+```
+### Example Json
 
-###Example Json###
 
 
-	:::javascript	
-		{
+
+```json
+        {
 		    "_id" : ObjectId("567ad55982ab1c146e85c583"),
 		    "created_at" : ISODate("2015-12-23T19:09:45.293Z"),
 		    "slug" : "proje-odevi-ve-performans-gorevi-1-sinif-proje-odevi-1-sinif-performans-gorevi-2-sinif-proje-odevi-2-sinif-pe",
@@ -30,38 +49,46 @@
 		    "isArchived" : false,
 		    "isSecret" : false
 		}
+```
+   
+   
+Quoteların kim tarafından girildiğini takip edebilmek için. Hangi quote hangi usera ait? ForeignKey mongodb de olmadığı için ReferenceField olarak ilişkilendiriyoruz.
 
-*Quoteların kim tarafından girildiğini takip edebilmek için. Hangi quote hangi usera ait? ForeignKey mongodb de olmadığı için ReferenceField olarak ilişkilendiriyoruz.*
-	
 
-	:::python
+
+```python
 		class NoteRef(db.Document):
 			created_at = db.DateTimeField(default=datetime.datetime.now)
 			note_id = db.ReferenceField('Note', reverse_delete_rule=mongoengine.CASCADE)
 			user_id = db.ReferenceField('User', reverse_delete_rule=mongoengine.PULL)
+```
 
-*Taglere ait notları listelemek ve taglerin takibini yapabilmek için... note_id kısmındaki ListField gereksiz. Ancak silersem sıkıntı çıkıyor. Böyle devam. İleride bir tage birden fazla not(quote) da ilişkilendirilebilir.*
+
+
+Taglere ait notları listelemek ve taglerin takibini yapabilmek için... note_id kısmındaki ListField gereksiz. Ancak silersem sıkıntı çıkıyor. Böyle devam. İleride bir tage birden fazla not(quote) da ilişkilendirilebilir.
 
 	
-	:::python
+```python
 		class TagRef(db.Document):
 			created_at = db.DateTimeField(default=datetime.datetime.now)
 			tags = db.StringField(max_length=30)
 			note_id = db.ListField(db.ReferenceField('Note', reverse_delete_rule=mongoengine.CASCADE))
+````
 
 **reverse delete rule??**
 
 
-	:::python
+```python
 		note_id = db.ReferenceField('Note', reverse_delete_rule=mongoengine.CASCADE)
 		user_id = db.ReferenceField('User', reverse_delete_rule=mongoengine.PULL)
+```
 
-*reverse delete rule: kullanıcı not eklediğinde hem notref, hem de tagref collection lara(table) user_id, note_id ve tag bilgileri relation olarak ekleniyor. reverse_delete_rule kullanıcı girdiği notu silmek istediğinde noteRef ve Tagref table larında oluşturulan bağlantıları da siliyor. *
+reverse delete rule: kullanıcı not eklediğinde hem notref, hem de tagref collection lara(table) user_id, note_id ve tag bilgileri relation olarak ekleniyor. reverse_delete_rule kullanıcı girdiği notu silmek istediğinde noteRef ve Tagref table larında oluşturulan bağlantıları da siliyor.
 
 
-###User Model###
+### User Model
 
-	:::python
+```python
    		class User(db.Document, UserMixin):    
 		    created_at = db.DateTimeField(default=datetime.datetime.now)
 		    name = db.StringField(max_length=30, required=True, unique=True, help_text="Username or Name-Lastname")
@@ -70,7 +97,8 @@
 		    slug = db.StringField(help_text="Slug")
 		    roles = db.ListField(db.StringField())
 		    notes = db.ListField(db.EmbeddedDocumentField('Note'))
-
+			
+            #trigger
 		    def save(self, *args, **kwargs):
 		        defaultRole = ("active",)
 		        if not self.slug:
@@ -78,21 +106,23 @@
 		        if not self.roles:
 		            self.roles = defaultRole
 		        return super(User, self).save(*args, **kwargs)
+````
 
 **EmbeddedDocumentField???** 
 
 
-	:::python 
+```python 
 		class User(db.Document, UserMixin):    
 			notes = db.ListField(db.EmbeddedDocumentField('Note'))
+```
 
-*NoSQl yapıda relationdan ziyade embedding var. Bu da embed edilmek istenen table(collection) ı mevcut collection ın içerisine basıyor. *
+NoSQl yapıda relationdan ziyade embedding var. Bu da embed edilmek istenen table(collection) ı mevcut collection ın içerisine basıyor.
 
 
 **def save metodu ile eklenen register olan user collection ına yapılan işlemler**
 
 
-	:::python
+```python
 		def save(self, *args, **kwargs):
 		    defaultRole = ("active",)
 		        if not self.slug:
@@ -100,19 +130,21 @@
 		        if not self.roles:
 		            self.roles = defaultRole
 		        return super(User, self).save(*args, **kwargs)
+```
 
-*slugify kullanıcı adı eğer boşluk bırakılarak girildiyse link olarak kullanılabilir hale getirir?*
-
-
-	:::javascript
-		Bugün günlerden pazar
-		bugun-gunlerden-pazar
+*slugify
 
 
-###Örnek user collection###
+```json
+Bugün günlerden pazar
+bugun-gunlerden-pazar
+```
 
 
-	:::javascript
+### Örnek user collection
+
+
+```json
 		{
 		    "_id" : ObjectId("567ad33682ab1c0fb2e33138"),
 		    "created_at" : ISODate("2015-12-23T19:00:38.304Z"),
@@ -137,13 +169,13 @@
 		        }		       
 		    ]
 		}
+```
 
-
-##VIEWS - CONTROLLER##
-###Add Quote View views.py###
+## VIEWS - CONTROLLER
+### Add Quote View views.py
 	
 	
-	:::python	
+```python	
 		if form.validate_on_submit():				
 			tags = form.tags.data
 			tagList = tags.split(",")
@@ -164,52 +196,55 @@
 		
 			flash('Quote saved successfully.','success')
 			return render_template('profile.html', form=form, search_form=SearchForm(), delete_quote=deleteQuoteForm())
+```
 
-
-**Tagler, virgülden itibaren ayırarak ayrı ayrı insert edilir. Aşağıdaki işlemde quote note collection ına kaydedilir.**
+Tagler, virgülden itibaren ayırarak ayrı ayrı insert edilir. Aşağıdaki işlemde quote note collection ına kaydedilir.
 	
 
-	:::python
+```python
 		tags = form.tags.data
 		tagList = tags.split(",")
 
 		note = Note(content=form.content.data, tags=tagList)		
 		note.save()
-
+```
 ***Kaydedilen bu not usera embed edilir.***
 	
 
-	:::python
+```python
 		current_user.notes.append(note)
 		current_user.save() 
+````
 
-*Kaydedilen not NoteRef collection ına referans id leri ile eklenir.*
+Kaydedilen not NoteRef collection ına referans id leri ile eklenir.*
 	
 
-	:::python
+```python
 		noteRef = NoteRef(note_id=note.id, user_id=current_user.id)
 		noteRef.save()
+````
 
-*Kaydedilen notun içerisinden tagler for döngüsüyle List içerisinden ayrıştırılarak ayrı ayrı row olarak insert edilirler ve her tag rowuna aynı quote id si ile  ilişkilendirilir.*
+Kaydedilen notun içerisinden tagler for döngüsüyle List içerisinden ayrıştırılarak ayrı ayrı row olarak insert edilirler ve her tag rowuna aynı quote id si ile  ilişkilendirilir.
 	
 
-	:::python
+```python
 		for item in tagList:
 			tagRef = TagRef(tags=item, note_id=[note.id,])
 			tagRef.save()
+````
 
 Tagler, virgülden itibaren ayırarak ayrı ayrı insert edilir.
 	
 
-	:::python
+```python
 		current_user.notes.append(note)
 		current_user.save() 
+```
 
-
-###Register - views.py###
+### Register - views.py
 	
 
-	:::python
+```python
 		if formS.validate_on_submit():					
 			hashash = formS.password.data
 			salt = uuid.uuid4().hex
@@ -230,11 +265,12 @@ Tagler, virgülden itibaren ayırarak ayrı ayrı insert edilir.
 				flash('Username or email already exists','danger')
 				return render_template("register.html", form=formS, title="Copylighter")
 
+````
 
-**Password ün hashlenmesi(şu an üzerinde çalışılıyor)**
+### Password ün hashlenmesi
 	
 
-	:::python
+```python
 		hashash = formS.password.data
 		salt = uuid.uuid4().hex
 		hashed_password = hashlib.sha224(hashash + salt).hexdigest()
@@ -245,4 +281,6 @@ Tagler, virgülden itibaren ayırarak ayrı ayrı insert edilir.
 
 		try:
 			newuser.save()
-
+        except NotUniqueError:
+	        ..............
+```
